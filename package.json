@@ -1,0 +1,42 @@
+{
+  "name": "sitc-tristn",
+  "version": "1.0.0",
+  "description": "An attendance-tracking app for Summer in the City",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --config ./webpack.config.js --mode development --open",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tristanlopus/sitc-tristn.git"
+  },
+  "author": "Tristan Lopus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tristanlopus/sitc-tristn/issues"
+  },
+  "homepage": "https://github.com/tristanlopus/sitc-tristn#readme",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "eslint": "^5.12.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.12.4",
+    "react-hot-loader": "^4.6.3",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.9.0",
+    "@material-ui/icons": "^3.0.2",
+    "airtable": "^0.5.8",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0"
+  }
+}
