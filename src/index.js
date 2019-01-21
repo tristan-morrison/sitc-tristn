@@ -1,9 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Airtable from 'airtable';
+import * as log from 'loglevel'
+
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+
+import App from './components/App';
+
+log.setLevel("trace");
 
 const theme = createMuiTheme({
   typography: {
@@ -11,9 +16,9 @@ const theme = createMuiTheme({
   },
 });
 
-function App() {
-
+function Root() {
   return (
+
     <MuiThemeProvider theme={theme}>
       <div>
         <Typography variant="h2">Hello, World!</Typography>
@@ -21,11 +26,12 @@ function App() {
           Hello World
         </Button>
       </div>
+      <App />
     </MuiThemeProvider>
 
   );
 }
 
-ReactDOM.render(<App />, document.querySelector('#app'));
+ReactDOM.render(<Root />, document.querySelector('#app'));
 
 module.hot.accept();

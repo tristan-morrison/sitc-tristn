@@ -36,6 +36,9 @@
     "@material-ui/core": "^3.9.0",
     "@material-ui/icons": "^3.0.2",
     "airtable": "^0.5.8",
+    "dotenv": "^6.2.0",
+    "dotenv-webpack": "^1.7.0",
+    "loglevel": "^1.6.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0"
   }
