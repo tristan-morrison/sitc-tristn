@@ -26,6 +26,7 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new Dotenv(),
   ],
+  devtool: 'source-map',
   devServer: {
     contentBase: '.',
     port: 3030,
