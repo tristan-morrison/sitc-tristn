@@ -5,7 +5,7 @@ import * as log from 'loglevel'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import lightBlue from '@material-ui/core/colors/lightBlue';
+import blue from '@material-ui/core/colors/blue';
 import deepOrange from '@material-ui/core/colors/deepOrange';
 
 import App from './components/App';
@@ -14,7 +14,7 @@ log.setLevel("trace");
 
 const theme = createMuiTheme({
   palette: {
-    primary: lightBlue,
+    primary: blue,
     secondary: deepOrange
   },
   typography: {
@@ -26,12 +26,6 @@ function Root() {
   return (
 
     <MuiThemeProvider theme={theme}>
-      <div>
-        <Typography variant="h2">Hello, World!</Typography>
-        <Button variant="contained" color="primary">
-          Hello World
-        </Button>
-      </div>
       <App />
     </MuiThemeProvider>
 

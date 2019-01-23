@@ -2,13 +2,22 @@ import React from 'React';
 import ReactDOM from 'react-dom';
 import Airtable from 'airtable';
 
-import VolunteerList from './VolunteerList'
+import { withStyles } from '@material-ui/core/styles';
 
+import VolunteerList from './VolunteerList';
+import TristnAppBar from './TristnAppBar';
+
+const styles = theme => ({
+  root: {
+    width: '100%'
+  }
+});
 
 class App extends React.Component {
 
 
   render () {
+    const { classes } = this.props;
     const base = new Airtable({apiKey: 'keydn7CwS79jE483I'}).base('appNWDa6ZElvW44m2');
 
     base('Profiles').select({
@@ -32,10 +41,13 @@ class App extends React.Component {
     });
 
     return (
-      <VolunteerList />
+      <div id="Root" className={classes.root}>
+        <TristnAppBar />
+        <VolunteerList />
+      </div>
     )
   }
 
 }
 
-export default App;
+export default withStyles(styles)(App);
