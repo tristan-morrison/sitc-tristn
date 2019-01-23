@@ -18,28 +18,32 @@ const styles = theme => ({
   root: {
   },
   growSpacer: {
+    width: '50px',
+    height: '100%',
     flexGrow: 1
   },
   searchIcon: {
-    width: theme.spacing.unit * 9,
+    width: theme.spacing.unit,
+    marginLeft: theme.spacing.unit * 1.5,
     height: '100%',
     position: 'absolute',
     pointerEvents: 'none',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   searchContainer: {
     position: 'relative',
+    minWidth: theme.spacing.unit * 4,
     borderRadius: theme.shape.borderRadius,
     backgroundColor: fade(theme.palette.common.white, 0.15),
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25)
     },
     marginLeft: 0,
+    width: 'auto',
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing.unit,
-      width: 'auto',
     }
   },
   inputRoot: {
@@ -47,22 +51,26 @@ const styles = theme => ({
     width: '100%'
   },
   inputInput: {
-    paddingTop: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-    paddingBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit* 10,
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('sm')]: {
+      paddingTop: theme.spacing.unit,
+      paddingRight: theme.spacing.unit,
+      paddingBottom: theme.spacing.unit,
+      paddingLeft: theme.spacing.unit* 10,
       width: 120,
       '&:focus': {
         width: 200
       }
     },
     [theme.breakpoints.down('sm')]: {
-      width: 50,
-      '&focus': {
-        width: 200
+      width: 5,
+      '&:focus': {
+        paddingTop: theme.spacing.unit,
+        paddingRight: theme.spacing.unit,
+        paddingBottom: theme.spacing.unit,
+        paddingLeft: theme.spacing.unit* 5,
+        width: 500
       }
     }
   }
@@ -72,8 +80,7 @@ class TristnAppBar extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const theme = useTheme();
-    loglevel.info(theme.breakpoints.up('sm'));
+    loglevel.info(this.props.theme.breakpoints.up('sm'));
 
     return (
       <AppBar position="static">
@@ -90,7 +97,6 @@ class TristnAppBar extends React.Component {
               <SearchIcon />
             </div>
             <InputBase
-              placeholder="Search"
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput
@@ -105,4 +111,4 @@ class TristnAppBar extends React.Component {
 
 }
 
-export default withStyles(styles)(TristnAppBar);
+export default withStyles(styles, { withTheme: true})(TristnAppBar);
