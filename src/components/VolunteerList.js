@@ -29,7 +29,7 @@ class VolunteerList extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      volunteerInfo: []
+      volunteerInfo: {}
     };
   }
 
@@ -39,15 +39,15 @@ class VolunteerList extends React.Component {
 
     const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.VOLUNTEERS_BASE_ID);
 
-    const volunteerArray = [];
+    const volunteers = {};
 
     base('Profiles').select({
       maxRecords: 100,
       view: "Grid view"
     }).eachPage((records, fetchNextPage) => {
         records.forEach(function (record) {
-          loglevel.debug(record.get('PersonID'));
-          volunteerArray.push(record);
+          loglevel.debug(record.fields['PersonID']);
+          volunteers[record.fields['PersonID']] = record.fields;
         });
 
         fetchNextPage();
@@ -55,9 +55,10 @@ class VolunteerList extends React.Component {
         if (err) {
           loglevel.error(err);
         }
-        self.setState({
-          volunteerInfo: volunteerArray
-        });
+        // self.setState({
+        //   volunteerInfo: volunteers
+        // });
+        this.props.updateVolunteerInfo(volunteers);
       });
   }
 
@@ -68,11 +69,12 @@ class VolunteerList extends React.Component {
   render() {
     const { classes } = this.props;
     const teerListItems = [];
-    this.state.volunteerInfo.forEach((record) => {
+    const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : Object.keys(this.props.volunteerInfo);
+    listToRender.forEach((personID) => {
 
       // set the icon to go in this person's avatar
       let avatarIcon;
-      if (record.get('Has Car')) {
+      if (this.props.volunteerInfo[personID]['Has Car']) {
         avatarIcon = (
           <DriveEtaIcon />
         );
@@ -84,7 +86,7 @@ class VolunteerList extends React.Component {
 
       // set up the avatar with or without a badge
       let avatar = '';
-      if (record.get('Paid')) {
+      if (this.props.volunteerInfo[personID]['Paid']) {
         avatar = avatarIcon;
       } else {
         avatar = (
@@ -96,13 +98,13 @@ class VolunteerList extends React.Component {
 
       return (
         teerListItems.push(
-          <ListItem key = {record.get('PersonID')}>
+          <ListItem key = {this.props.volunteerInfo[personID]['PersonID']}>
             <ListItemIcon>
               {avatar}
             </ListItemIcon>
             <ListItemText
-              primary = {record.get('First Name') + ' ' + record.get('Last Name')}
-              secondary = {record.get('Hours Credited') + ' Hours'}>
+              primary = {this.props.volunteerInfo[personID]['First Name'] + ' ' + this.props.volunteerInfo[personID]['Last Name']}
+                secondary = {this.props.volunteerInfo[personID]['Hours Credited'] + ' Hours'}>
             </ListItemText>
             <ListItemSecondaryAction>
               <IconButton aria-label="Check In">

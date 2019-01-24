@@ -1,6 +1,6 @@
 import React from 'React';
 import ReactDOM from 'react-dom';
-import 'fuse.js';
+import Fuse from 'fuse.js';
 import * as loglevel from 'loglevel';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -14,6 +14,7 @@ import InputBase from '@material-ui/core/InputBase';
 import Input from '@material-ui/core/Input';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const styles = theme => ({
   root: {
@@ -33,8 +34,18 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  clearIcon: {
+    width: theme.spacing.unit,
+    height: '35px',
+    marginRight: theme.spacing.unit * 1.5,
+    // position: 'absolute',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   searchContainer: {
     position: 'relative',
+    display: 'flex',
     transition: theme.transitions.create('width'),
     minWidth: theme.spacing.unit * 4,
     borderRadius: theme.shape.borderRadius,
@@ -94,14 +105,34 @@ class TristnAppBar extends React.Component {
       searchIsFocused: false,
     }
 
-    this.updateSearchText = this.updateSearchText.bind(this);
+    this.updateSearchTextAndFilter = this.updateSearchTextAndFilter.bind(this);
     this.onSearchFocused = this.onSearchFocused.bind(this);
     this.onSearchBlur = this.onSearchBlur.bind(this);
+    this.clearSearchText = this.clearSearchText.bind(this);
   }
 
-  updateSearchText (event) {
+  updateSearchTextAndFilter (event) {
     loglevel.debug(event.target.value);
-    this.setState({searchText: event.target.value});
+    const updatedText = event.target.value;
+    this.setState({searchText: updatedText});
+
+    var options = {
+      keys: [
+        {
+          name: 'First Name',
+          weight: 0.6
+        }, {
+          name: 'Last Name',
+          weight: 0.4
+        }
+      ],
+      id: "PersonID",
+      minMatchCharLength: 3,
+      shouldSort: true,
+    };
+    var fuse = new Fuse(Object.keys(this.props.volunteerInfo).map(id => this.props.volunteerInfo[id]), options); // "list" is the item array
+    var result = fuse.search(updatedText);
+    this.props.setFilter(result)
   }
 
   onSearchBlur () {
@@ -110,6 +141,11 @@ class TristnAppBar extends React.Component {
 
   onSearchFocused () {
     this.setState({searchIsFocused: !this.state.searchIsFocused});
+  }
+
+  clearSearchText (event) {
+    this.setState({searchText: ''});
+    this.setFilter({});
   }
 
 
@@ -127,7 +163,7 @@ class TristnAppBar extends React.Component {
     else {
       if (this.state.searchText.length > 0) {
         searchContainerStyle = {
-          width: (this.state.searchText.length * 8) + 50
+          width: (this.state.searchText.length * 8) + 50 + 20
         }
       } else {
         searchInputStyle = {
@@ -136,6 +172,17 @@ class TristnAppBar extends React.Component {
       }
     }
 
+    let clearContainer = '';
+    if (this.state.searchText.length > 0) {
+      clearContainer = (
+          <div className={classes.clearIcon}>
+            <IconButton color="inherit" onClick={this.clearSearchText}>
+              <ClearIcon />
+            </IconButton>
+          </div>
+      );
+      // searchContainerStyle['paddingRight'] = this.props.theme.spacing.unit * 4;
+    }
 
 
     return (
@@ -155,7 +202,7 @@ class TristnAppBar extends React.Component {
             <Input
               disableUnderline = "true"
               value = {this.state.searchText}
-              onChange = {this.updateSearchText}
+              onChange = {this.updateSearchTextAndFilter}
               onFocus = {this.onSearchFocused}
               onBlur = {this.onSearchBlur}
               classes={{
@@ -164,6 +211,7 @@ class TristnAppBar extends React.Component {
               }}
               style={searchInputStyle}
             />
+            {clearContainer}
           </div>
         </Toolbar>
       </AppBar>
