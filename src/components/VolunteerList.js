@@ -31,6 +31,8 @@ class VolunteerList extends React.Component {
     this.state = {
       volunteerInfo: {}
     };
+
+    this.listRow = this.listRow.bind(this);
   }
 
   // gets volunteer info from the Profiles table
@@ -62,59 +64,55 @@ class VolunteerList extends React.Component {
       });
   }
 
-  listRow(personInfo) {
+  listRow(personID) {
 
+    // set the icon to go in this person's avatar
+    let avatarIcon;
+    if (this.props.volunteerInfo[personID]['Has Car']) {
+      avatarIcon = (
+        <DriveEtaIcon />
+      );
+    } else {
+      avatarIcon = (
+        <AirlineSeatReclineNormalIcon />
+      );
+    }
+
+    // set up the avatar with or without a badge
+    let avatar = '';
+    if (this.props.volunteerInfo[personID]['Paid']) {
+      avatar = avatarIcon;
+    } else {
+      avatar = (
+        <Badge badgeContent="$" color="secondary">
+          {avatarIcon}
+        </Badge>
+      );
+    }
+
+    return (
+      <ListItem key = {this.props.volunteerInfo[personID]['PersonID']}>
+        <ListItemIcon>
+          {avatar}
+        </ListItemIcon>
+        <ListItemText
+          primary = {this.props.volunteerInfo[personID]['First Name'] + ' ' + this.props.volunteerInfo[personID]['Last Name']}
+            secondary = {this.props.volunteerInfo[personID]['Hours Credited'] + ' Hours'}>
+        </ListItemText>
+        <ListItemSecondaryAction>
+          <IconButton aria-label="Check In">
+            <ArrowForwardIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
+    );
   }
 
   render() {
     const { classes } = this.props;
     const teerListItems = [];
     const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : Object.keys(this.props.volunteerInfo);
-    listToRender.forEach((personID) => {
-
-      // set the icon to go in this person's avatar
-      let avatarIcon;
-      if (this.props.volunteerInfo[personID]['Has Car']) {
-        avatarIcon = (
-          <DriveEtaIcon />
-        );
-      } else {
-        avatarIcon = (
-          <AirlineSeatReclineNormalIcon />
-        );
-      }
-
-      // set up the avatar with or without a badge
-      let avatar = '';
-      if (this.props.volunteerInfo[personID]['Paid']) {
-        avatar = avatarIcon;
-      } else {
-        avatar = (
-          <Badge badgeContent="$" color="secondary">
-            {avatarIcon}
-          </Badge>
-        );
-      }
-
-      return (
-        teerListItems.push(
-          <ListItem key = {this.props.volunteerInfo[personID]['PersonID']}>
-            <ListItemIcon>
-              {avatar}
-            </ListItemIcon>
-            <ListItemText
-              primary = {this.props.volunteerInfo[personID]['First Name'] + ' ' + this.props.volunteerInfo[personID]['Last Name']}
-                secondary = {this.props.volunteerInfo[personID]['Hours Credited'] + ' Hours'}>
-            </ListItemText>
-            <ListItemSecondaryAction>
-              <IconButton aria-label="Check In">
-                <ArrowForwardIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        )
-      )
-    })
+    listToRender.forEach((personID) => teerListItems.push(this.listRow(personID)));
 
     return (
       <List>
