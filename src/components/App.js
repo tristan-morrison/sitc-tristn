@@ -20,7 +20,8 @@ class App extends React.Component {
 
     this.state = {
       volunteerInfo: {},
-      filteredVolunteerIds: []
+      filteredVolunteerIds: [],
+      checkedInTeers: [],
     }
 
     this.updateVolunteerInfo = this.updateVolunteerInfo.bind(this);

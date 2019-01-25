@@ -5,19 +5,10 @@ import * as loglevel from 'loglevel';
 
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import Avatar from '@material-ui/core/Avatar';
-import Badge from '@material-ui/core/Badge';
-import Typography from '@material-ui/core/Typography';
-import SvgIcon from '@material-ui/core/SvgIcon';
-import DriveEtaIcon from '@material-ui/icons/DriveEta';
-import AirlineSeatReclineNormalIcon from '@material-ui/icons/AirlineSeatReclineNormal';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+
+
+import VolunteerListRow from './VolunteerListRow';
+import sitcAirtable from './../api/sitcAirtable';
 
 const styles = theme => ({
   avatar: {
@@ -32,7 +23,7 @@ class VolunteerList extends React.Component {
       volunteerInfo: {}
     };
 
-    this.listRow = this.listRow.bind(this);
+    this.checkIn = this.checkIn.bind(this);
   }
 
   // gets volunteer info from the Profiles table
@@ -64,55 +55,27 @@ class VolunteerList extends React.Component {
       });
   }
 
-  listRow(personID) {
-
-    // set the icon to go in this person's avatar
-    let avatarIcon;
-    if (this.props.volunteerInfo[personID]['Has Car']) {
-      avatarIcon = (
-        <DriveEtaIcon />
-      );
-    } else {
-      avatarIcon = (
-        <AirlineSeatReclineNormalIcon />
-      );
-    }
-
-    // set up the avatar with or without a badge
-    let avatar = '';
-    if (this.props.volunteerInfo[personID]['Paid']) {
-      avatar = avatarIcon;
-    } else {
-      avatar = (
-        <Badge badgeContent="$" color="secondary">
-          {avatarIcon}
-        </Badge>
-      );
-    }
-
-    return (
-      <ListItem key = {this.props.volunteerInfo[personID]['PersonID']}>
-        <ListItemIcon>
-          {avatar}
-        </ListItemIcon>
-        <ListItemText
-          primary = {this.props.volunteerInfo[personID]['First Name'] + ' ' + this.props.volunteerInfo[personID]['Last Name']}
-            secondary = {this.props.volunteerInfo[personID]['Hours Credited'] + ' Hours'}>
-        </ListItemText>
-        <ListItemSecondaryAction>
-          <IconButton aria-label="Check In">
-            <ArrowForwardIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    );
+  checkIn (personId, hours) {
+    sitcAirtable.checkIn(personId, hours);
   }
 
   render() {
     const { classes } = this.props;
     const teerListItems = [];
     const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : Object.keys(this.props.volunteerInfo);
-    listToRender.forEach((personID) => teerListItems.push(this.listRow(personID)));
+    listToRender.forEach((personID) => {
+      teerListItems.push(
+        <VolunteerListRow
+          personId = {personID}
+          firstName = {this.props.volunteerInfo[personID]['First Name']}
+          lastName = {this.props.volunteerInfo[personID]['Last Name']}
+          paid = {this.props.volunteerInfo[personID]['Paid']}
+          hours = {this.props.volunteerInfo[personID]['Hours Credited']}
+          hasCar = {this.props.volunteerInfo[personID]['Has Car']}
+          checkIn = {this.checkIn}
+        />
+      );
+    });
 
     return (
       <List>
