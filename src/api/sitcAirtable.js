@@ -6,7 +6,7 @@ function checkIn (personId, hours) {
 
   loglevel.info(personId);
 
-  base('Attendance').create({
+  base(process.env.ATTENDANCE_TABLE_NAME).create({
     "Volunteer ID": [
       personId
     ],
@@ -26,3 +26,13 @@ function checkIn (personId, hours) {
 export default {
   checkIn
 };
+
+function getAttendanceRecordsForToday () {
+  const now = new Date();
+
+  const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.VOLUNTEERS_BASE_ID);
+
+  base(process.env.ATTENDANCE_TABLE_NAME)
+
+
+}

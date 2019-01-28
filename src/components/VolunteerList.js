@@ -34,7 +34,7 @@ class VolunteerList extends React.Component {
 
     const volunteers = {};
 
-    base('Profiles').select({
+    base(process.env.PROFILES_TABLE_NAME).select({
       maxRecords: 100,
       view: "Grid view"
     }).eachPage((records, fetchNextPage) => {
