@@ -25,11 +25,17 @@ class App extends React.Component {
     }
 
     this.updateVolunteerInfo = this.updateVolunteerInfo.bind(this);
+    this.updateCheckedInTeers = this.updateCheckedInTeers.bind(this);
     this.setFilter = this.setFilter.bind(this);
   }
 
   updateVolunteerInfo (info) {
     this.setState({volunteerInfo: info});
+  }
+
+  updateCheckedInTeers (info) {
+    this.setState({checkedInTeers: info})
+    loglevel.info(info);
   }
 
   setFilter (filteredTeers) {
@@ -48,8 +54,10 @@ class App extends React.Component {
         />
         <VolunteerList
           updateVolunteerInfo={this.updateVolunteerInfo}
+          updateCheckedInTeers={this.updateCheckedInTeers}
           volunteerInfo={this.state.volunteerInfo}
           filteredVolunteerIds={this.state.filteredVolunteerIds}
+          checkedInTeers={this.state.checkedInTeers}
         />
       </div>
     )

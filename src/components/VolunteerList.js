@@ -2,6 +2,7 @@ import React from 'React';
 import ReactDOM from 'react-dom';
 import Airtable from 'airtable';
 import * as loglevel from 'loglevel';
+import {AIRTABLE} from './../constants';
 
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -30,11 +31,11 @@ class VolunteerList extends React.Component {
   componentDidMount () {
     let self = this;
 
-    const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.VOLUNTEERS_BASE_ID);
+    const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
 
     const volunteers = {};
 
-    base(process.env.PROFILES_TABLE_NAME).select({
+    base(AIRTABLE.PROFILES_TABLE).select({
       maxRecords: 100,
       view: "Grid view"
     }).eachPage((records, fetchNextPage) => {
@@ -53,10 +54,21 @@ class VolunteerList extends React.Component {
         // });
         this.props.updateVolunteerInfo(volunteers);
       });
+
+    const myPromise = sitcAirtable.getAttendanceRecordsToday();
+    myPromise.then(info => this.props.updateCheckedInTeers(info));
   }
 
   checkIn (personId, hours) {
-    sitcAirtable.checkIn(personId, hours);
+    if (this.props.checkedInTeers.includes(personId)) {
+      loglevel.error("This person is already checked in!!");
+      return -1;
+    }
+    sitcAirtable.checkIn(personId, hours).then(code => {
+      loglevel.info("Checked in!");
+      this.props.updateCheckedInTeers(this.props.checkedInTeers.concat([personId]))
+      loglevel.info(this.props.checkedInTeers);
+    }, err => loglevel.error("Error with the server call!"));
   }
 
   render() {
