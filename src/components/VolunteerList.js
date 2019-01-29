@@ -20,43 +20,8 @@ const styles = theme => ({
 class VolunteerList extends React.Component {
   constructor (props) {
     super(props);
-    this.state = {
-      volunteerInfo: {}
-    };
 
     this.checkIn = this.checkIn.bind(this);
-  }
-
-  // gets volunteer info from the Profiles table
-  componentDidMount () {
-    let self = this;
-
-    const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
-
-    const volunteers = {};
-
-    base(AIRTABLE.PROFILES_TABLE).select({
-      maxRecords: 100,
-      view: "Grid view"
-    }).eachPage((records, fetchNextPage) => {
-        records.forEach(function (record) {
-          loglevel.debug(record.fields['PersonID']);
-          volunteers[record.fields['PersonID']] = record.fields;
-        });
-
-        fetchNextPage();
-    }, (err) => {
-        if (err) {
-          loglevel.error(err);
-        }
-        // self.setState({
-        //   volunteerInfo: volunteers
-        // });
-        this.props.updateVolunteerInfo(volunteers);
-      });
-
-    const myPromise = sitcAirtable.getAttendanceRecordsToday();
-    myPromise.then(info => this.props.updateCheckedInTeers(info));
   }
 
   checkIn (personId, hours) {
@@ -64,18 +29,13 @@ class VolunteerList extends React.Component {
       loglevel.error("This person is already checked in!!");
       return -1;
     }
-    sitcAirtable.checkIn(personId, hours).then(code => {
-      loglevel.info("Checked in!");
-      this.props.updateCheckedInTeers(this.props.checkedInTeers.concat([personId]))
-      loglevel.info(this.props.checkedInTeers);
-    }, err => loglevel.error("Error with the server call!"));
+    this.props.checkInHandler(personId, hours)
   }
 
   render() {
     const { classes } = this.props;
     const teerListItems = [];
-    const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : Object.keys(this.props.volunteerInfo);
-    listToRender.forEach((personID) => {
+    this.props.listToRender.forEach((personID) => {
       teerListItems.push(
         <VolunteerListRow
           personId = {personID}

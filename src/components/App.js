@@ -5,8 +5,8 @@ import loglevel from 'loglevel';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import VolunteerList from './VolunteerList';
 import TristnAppBar from './TristnAppBar';
+import MainView from './MainView'
 
 const styles = theme => ({
   root: {
@@ -52,7 +52,7 @@ class App extends React.Component {
             setFilter={this.setFilter}
             volunteerInfo={this.state.volunteerInfo}
         />
-        <VolunteerList
+        <MainView
           updateVolunteerInfo={this.updateVolunteerInfo}
           updateCheckedInTeers={this.updateCheckedInTeers}
           volunteerInfo={this.state.volunteerInfo}

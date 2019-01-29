@@ -89,9 +89,6 @@ const styles = theme => ({
         // width: 500
       }
     },
-    '&$underline:before': {
-      borderBottom: 0
-    }
   }
 });
 
