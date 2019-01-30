@@ -5,7 +5,7 @@ import * as loglevel from 'loglevel';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 
-// import CheckedInListRow from './CheckedInListRow';
+import CheckedInListRow from './CheckedInListRow';
 import sitcAirtable from './../api/sitcAirtable';
 
 const styles = theme => ({
@@ -13,9 +13,36 @@ const styles = theme => ({
 
 class CheckedInList extends React.Component {
 
+  constructor () {
+    super();
+
+    this.checkOut = this.checkOut.bind(this);
+  }
+
+  checkOut (personId) {
+    loglevel.info('checking out ' + personId);
+  }
+
   render () {
+    const teerListItems = [];
+    this.props.listToRender.forEach(personID => {
+      teerListItems.push(
+        <CheckedInListRow
+          personId = {personID}
+          firstName = {this.props.volunteerInfo[personID]['First Name']}
+          lastName = {this.props.volunteerInfo[personID]['Last Name']}
+          paid = {this.props.volunteerInfo[personID]['Paid']}
+          hours = {this.props.volunteerInfo[personID]['Hours Credited']}
+          hasCar = {this.props.volunteerInfo[personID]['Has Car']}
+          checkOut = {this.checkOut}
+        />
+      );
+    });
+
     return (
-      <h2>Hello, World!</h2>
+      <List>
+        {teerListItems}
+      </List>
     );
   }
 

@@ -51,7 +51,7 @@ class VolunteerList extends React.Component {
 
     return (
       <List>
-        {teerListItems};
+        {teerListItems}
       </List>
     );
   }

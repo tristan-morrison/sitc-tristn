@@ -21,9 +21,9 @@ class MainView extends React.Component {
     super();
 
     this.state = {
-      notCheckedIn: [],
       tabVal: 0,
       tabIndex: 0,
+      loadingTeerData: true,
     }
 
     this.checkInHandler = this.checkInHandler.bind(this);
@@ -51,7 +51,7 @@ class MainView extends React.Component {
             loglevel.debug(record.fields['PersonID']);
             volunteers[record.fields['PersonID']] = record.fields;
             if (!self.props.checkedInTeers.includes(record.fields['PersonID'])) {
-              self.state.notCheckedIn.push(record.fields['PersonID']);
+              self.props.notCheckedIn.push(record.fields['PersonID']);
             }
           });
 
@@ -61,6 +61,7 @@ class MainView extends React.Component {
             loglevel.error(err);
           }
           this.props.updateVolunteerInfo(volunteers);
+          this.setState({loadingTeerData: false})
         });
       });
 
@@ -74,9 +75,9 @@ class MainView extends React.Component {
       loglevel.info(this.props.checkedInTeers);
 
       // have to slice because we need to assign a copy of the original, not a reference to it
-      const updatedNotCheckedIn = this.state.notCheckedIn.slice();
+      const updatedNotCheckedIn = this.props.notCheckedIn.slice();
       updatedNotCheckedIn.splice(updatedNotCheckedIn.indexOf(personId), 1);
-      this.setState({notCheckedIn: updatedNotCheckedIn});
+      this.updateNotCheckedInTeers(updatedNotCheckedIn);
     }, err => loglevel.error("Error with the server call!"));
   }
 
@@ -90,6 +91,10 @@ class MainView extends React.Component {
 
   render () {
     const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : Object.keys(this.props.volunteerInfo);
+
+    if (this.state.loadingTeerData) {
+      return null;
+    }
 
     return (
       <React.Fragment>
@@ -109,9 +114,12 @@ class MainView extends React.Component {
             checkInHandler={this.checkInHandler}
             volunteerInfo={this.props.volunteerInfo}
             checkedInTeers={this.props.checkedInTeers}
-            listToRender={this.state.notCheckedIn}
+            listToRender={this.props.notCheckedIn}
           />
-          <CheckedInList />
+          <CheckedInList
+            volunteerInfo={this.props.volunteerInfo}
+            listToRender={this.props.checkedInTeers}
+          />
         </SwipeableViews>
       </React.Fragment>
     );

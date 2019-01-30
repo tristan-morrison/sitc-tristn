@@ -22,10 +22,12 @@ class App extends React.Component {
       volunteerInfo: {},
       filteredVolunteerIds: [],
       checkedInTeers: [],
+      notCheckedInTeers: [],
     }
 
     this.updateVolunteerInfo = this.updateVolunteerInfo.bind(this);
     this.updateCheckedInTeers = this.updateCheckedInTeers.bind(this);
+    this.updateNotCheckedInTeers = this.updateNotCheckedInTeers.bind(this);
     this.setFilter = this.setFilter.bind(this);
   }
 
@@ -35,6 +37,11 @@ class App extends React.Component {
 
   updateCheckedInTeers (info) {
     this.setState({checkedInTeers: info})
+    loglevel.info(info);
+  }
+
+  updateNotCheckedInTeers (info) {
+    this.setState({notCheckedInTeers: info});
     loglevel.info(info);
   }
 
@@ -56,9 +63,11 @@ class App extends React.Component {
           <MainView
             updateVolunteerInfo={this.updateVolunteerInfo}
             updateCheckedInTeers={this.updateCheckedInTeers}
+            updateNotCheckedInTeers={this.updateNotCheckedInTeers}
             volunteerInfo={this.state.volunteerInfo}
             filteredVolunteerIds={this.state.filteredVolunteerIds}
             checkedInTeers={this.state.checkedInTeers}
+            notCheckedIn={this.state.notCheckedInTeers}
           />
         </React.Fragment>
       </div>
