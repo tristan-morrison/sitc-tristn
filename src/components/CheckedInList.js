@@ -14,7 +14,9 @@ const styles = theme => ({
 class CheckedInList extends React.Component {
 
   render () {
-    
+    return (
+      <h2>Hello, World!</h2>
+    );
   }
 
 }

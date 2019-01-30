@@ -48,17 +48,19 @@ class App extends React.Component {
 
     return (
       <div id="Root" className={classes.root}>
-        <TristnAppBar
-            setFilter={this.setFilter}
+        <React.Fragment key="1">
+          <TristnAppBar
+              setFilter={this.setFilter}
+              volunteerInfo={this.state.volunteerInfo}
+          />
+          <MainView
+            updateVolunteerInfo={this.updateVolunteerInfo}
+            updateCheckedInTeers={this.updateCheckedInTeers}
             volunteerInfo={this.state.volunteerInfo}
-        />
-        <MainView
-          updateVolunteerInfo={this.updateVolunteerInfo}
-          updateCheckedInTeers={this.updateCheckedInTeers}
-          volunteerInfo={this.state.volunteerInfo}
-          filteredVolunteerIds={this.state.filteredVolunteerIds}
-          checkedInTeers={this.state.checkedInTeers}
-        />
+            filteredVolunteerIds={this.state.filteredVolunteerIds}
+            checkedInTeers={this.state.checkedInTeers}
+          />
+        </React.Fragment>
       </div>
     )
   }

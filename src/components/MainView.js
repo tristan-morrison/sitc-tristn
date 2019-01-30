@@ -1,13 +1,15 @@
 import React from 'React';
 import ReactDOM from 'react-dom';
+import SwipeableViews from 'react-swipeable-views';
 import Airtable from 'airtable';
 import * as loglevel from 'loglevel';
 import {AIRTABLE} from './../constants';
 
 import { withStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-
-
+import PropTypes from 'prop-types';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
 
 import VolunteerList from './VolunteerList';
 import CheckedInList from './CheckedInList';
@@ -20,9 +22,13 @@ class MainView extends React.Component {
 
     this.state = {
       notCheckedIn: [],
+      tabVal: 0,
+      tabIndex: 0,
     }
 
     this.checkInHandler = this.checkInHandler.bind(this);
+    this.handleTabChange = this.handleTabChange.bind(this);
+    this.handleChangeIndex = this.handleChangeIndex.bind(this);
   }
 
   // gets volunteer info from the Profiles table
@@ -74,16 +80,40 @@ class MainView extends React.Component {
     }, err => loglevel.error("Error with the server call!"));
   }
 
+  handleTabChange (event, value) {
+    this.setState({tabVal: value});
+  }
+
+  handleChangeIndex (index) {
+    this.setState({tabVal: index});
+  }
+
   render () {
     const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : Object.keys(this.props.volunteerInfo);
 
     return (
-      <VolunteerList
-        checkInHandler={this.checkInHandler}
-        volunteerInfo={this.props.volunteerInfo}
-        checkedInTeers={this.props.checkedInTeers}
-        listToRender={this.state.notCheckedIn}
-      />
+      <React.Fragment>
+        <Tabs
+          value={this.state.tabVal}
+          onChange={this.handleTabChange}
+          variant="fullWidth"
+        >
+          <Tab label="Registered" />
+          <Tab label="Checked In" />
+        </Tabs>
+        <SwipeableViews
+          index={this.state.tabVal}
+          onChangeIndex={this.handleChangeIndex}
+        >
+          <VolunteerList
+            checkInHandler={this.checkInHandler}
+            volunteerInfo={this.props.volunteerInfo}
+            checkedInTeers={this.props.checkedInTeers}
+            listToRender={this.state.notCheckedIn}
+          />
+          <CheckedInList />
+        </SwipeableViews>
+      </React.Fragment>
     );
 
   }
