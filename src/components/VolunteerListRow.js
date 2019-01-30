@@ -14,6 +14,7 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import DriveEtaIcon from '@material-ui/icons/DriveEta';
 import AirlineSeatReclineNormalIcon from '@material-ui/icons/AirlineSeatReclineNormal';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import Collapse from '@material-ui/core/Collapse';
 
 class VolunteerListRow extends React.Component {
 
@@ -21,7 +22,8 @@ class VolunteerListRow extends React.Component {
     super();
 
     this.state = {
-      avatar: ''
+      avatar: '',
+      show: true,
     }
 
     this.handleCheckInClick = this.handleCheckInClick.bind(this);
@@ -55,28 +57,32 @@ class VolunteerListRow extends React.Component {
   }
 
   handleCheckInClick (event) {
+    this.setState({show: false});
     this.props.checkIn(this.props.personId, 4);
   }
 
   render() {
 
     const avatar = this.state.avatar;
+    const show = this.state.show;
 
     return (
-      <ListItem key = {this.props.personId}>
-        <ListItemIcon>
-          {avatar}
-        </ListItemIcon>
-        <ListItemText
-          primary = {this.props.firstName + ' ' + this.props.lastName}
-            secondary = {this.props.hours + ' Hours'}>
-        </ListItemText>
-        <ListItemSecondaryAction>
-          <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>
-            <ArrowForwardIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
+      <Collapse in={show} unmountOnExit>
+        <ListItem key = {this.props.personId}>
+          <ListItemIcon>
+            {avatar}
+          </ListItemIcon>
+          <ListItemText
+            primary = {this.props.firstName + ' ' + this.props.lastName}
+              secondary = {this.props.hours + ' Hours'}>
+          </ListItemText>
+          <ListItemSecondaryAction>
+            <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>
+              <ArrowForwardIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+      </Collapse>
     );
   }
 }
