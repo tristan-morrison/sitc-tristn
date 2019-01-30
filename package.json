@@ -41,6 +41,7 @@
     "fuse.js": "^3.3.0",
     "loglevel": "^1.6.1",
     "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "react-dom": "^16.7.0",
+    "react-swipeable-views": "^0.13.1"
   }
 }
