@@ -1,4 +1,5 @@
 import Airtable from 'airtable';
+import myDatetime from './myDatetime';
 import {
   AIRTABLE,
   TIME_ZONE
@@ -31,11 +32,11 @@ function checkIn (personId, hours) {
 
 function getAttendanceRecordsToday () {
   const myPromise = new Promise((resolve, reject) => {
-    const now = new Date();
+    const nowInDetroit = new Date();
     // thanks to user113716 on SO for the clever way to add leading zeros without any comparisons
     // https://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date
-    const nowString = now.getUTCFullYear() + "-" + ("0" + (now.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + now.getUTCDate()).slice(-2);
-    loglevel.debug(nowString);
+    const nowInDetroitStr = nowInDetroit.getFullYear() + "-" + ("0" + (nowInDetroit.getMonth() + 1)).slice(-2) + "-" + ("0" + nowInDetroit.getDate()).slice(-2);
+    loglevel.debug(nowInDetroitStr);
 
     const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
 
@@ -45,7 +46,7 @@ function getAttendanceRecordsToday () {
 
     base(AIRTABLE.ATTENDANCE_TABLE).select({
       view: AIRTABLE.ATTENDANCE_VIEW,
-      filterByFormula: `IS_SAME({Date}, DATETIME_PARSE('${nowString}'), 'day')`,
+      filterByFormula: `IS_SAME({Date}, DATETIME_PARSE('${nowInDetroitStr}'), 'day')`,
       timeZone: AIRTABLE.TIME_ZONE,
     }).eachPage(function page(records, fetchNextPage) {
       records.forEach(record => checkedInTeers.push(record.get('Volunteer ID')[0]));
