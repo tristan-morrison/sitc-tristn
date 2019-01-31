@@ -23,13 +23,21 @@ class VolunteerListRow extends React.Component {
 
     this.state = {
       avatar: '',
-      show: true,
     }
 
     this.handleCheckInClick = this.handleCheckInClick.bind(this);
   }
 
   componentDidMount () {
+
+  }
+
+  handleCheckInClick (event) {
+    this.props.checkIn(this.props.personId, 4);
+  }
+
+  render() {
+
     // set the icon to go in this person's avatar
     let avatarIcon;
     if (this.props.hasCar) {
@@ -42,47 +50,37 @@ class VolunteerListRow extends React.Component {
       );
     }
 
+    let avatar = ''
     // set up the avatar with or without a badge
-    this.state.avatar = '';
+    // this.state.avatar = '';
     if (this.props.paid) {
-      this.setState({avatar: avatarIcon});
+      // this.setState({avatar: avatarIcon});
+      avatar = avatarIcon;
     } else {
       const content = (
         <Badge badgeContent="$" color="secondary">
           {avatarIcon}
         </Badge>
       );
-      this.setState({avatar: content});
+      // this.setState({avatar: content});
+      avatar = content;
     }
-  }
-
-  handleCheckInClick (event) {
-    this.setState({show: false});
-    this.props.checkIn(this.props.personId, 4);
-  }
-
-  render() {
-
-    const avatar = this.state.avatar;
-    const show = this.state.show;
 
     return (
-      <Collapse in={show} unmountOnExit>
-        <ListItem key = {this.props.personId}>
-          <ListItemIcon>
-            {avatar}
-          </ListItemIcon>
-          <ListItemText
-            primary = {this.props.firstName + ' ' + this.props.lastName}
-              secondary = {this.props.hours + ' Hours'}>
-          </ListItemText>
-          <ListItemSecondaryAction>
-            <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>
-              <ArrowForwardIcon />
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
-      </Collapse>
+      <ListItem key = {this.props.personId}>
+        <ListItemIcon>
+          {avatar}
+        </ListItemIcon>
+        <ListItemText
+          primary = {this.props.firstName + ' ' + this.props.lastName}
+            secondary = {this.props.hours + ' Hours'}>
+        </ListItemText>
+        <ListItemSecondaryAction>
+          <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>
+            <ArrowForwardIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
     );
   }
 }

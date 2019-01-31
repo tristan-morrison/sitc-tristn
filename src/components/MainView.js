@@ -77,7 +77,7 @@ class MainView extends React.Component {
       // have to slice because we need to assign a copy of the original, not a reference to it
       const updatedNotCheckedIn = this.props.notCheckedIn.slice();
       updatedNotCheckedIn.splice(updatedNotCheckedIn.indexOf(personId), 1);
-      this.updateNotCheckedInTeers(updatedNotCheckedIn);
+      this.props.updateNotCheckedInTeers(updatedNotCheckedIn);
     }, err => loglevel.error("Error with the server call!"));
   }
 
