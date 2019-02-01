@@ -1,5 +1,6 @@
 import React from 'React';
 import * as loglevel from 'loglevel';
+// import { Transition } from 'react-transition-group';
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -14,7 +15,7 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import DriveEtaIcon from '@material-ui/icons/DriveEta';
 import AirlineSeatReclineNormalIcon from '@material-ui/icons/AirlineSeatReclineNormal';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import Collapse from '@material-ui/core/Collapse';
+import Slide from '@material-ui/core/Slide';
 
 class VolunteerListRow extends React.Component {
 
@@ -23,17 +24,25 @@ class VolunteerListRow extends React.Component {
 
     this.state = {
       avatar: '',
+      show: true
     }
 
     this.handleCheckInClick = this.handleCheckInClick.bind(this);
+    this.exited = this.exited.bind(this);
   }
 
   componentDidMount () {
 
   }
 
-  handleCheckInClick (event) {
+  exited () {
+    loglevel.info("componentWillUnmount ran!");
     this.props.checkIn(this.props.personId, 4);
+  }
+
+  handleCheckInClick (event) {
+    loglevel.info("I got clicked!" + this.props.personId);
+    this.setState({show: false});
   }
 
   render() {
@@ -67,20 +76,22 @@ class VolunteerListRow extends React.Component {
     }
 
     return (
-      <ListItem key = {this.props.personId}>
-        <ListItemIcon>
-          {avatar}
-        </ListItemIcon>
-        <ListItemText
-          primary = {this.props.firstName + ' ' + this.props.lastName}
-            secondary = {this.props.hours + ' Hours'}>
-        </ListItemText>
-        <ListItemSecondaryAction>
-          <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>
-            <ArrowForwardIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
+      <Slide in={this.state.show} unmountOnExit onExited={this.exited} direction="left" timeout={{enter: 0, exit: 300}}>
+        <ListItem key = {this.props.personId}>
+          <ListItemIcon>
+            {avatar}
+          </ListItemIcon>
+          <ListItemText
+            primary = {this.props.firstName + ' ' + this.props.lastName}
+            secondary = {this.props.hours + ' Hours' + " | " + this.props.personId}>
+          </ListItemText>
+          <ListItemSecondaryAction>
+            <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>
+              <ArrowForwardIcon />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>
+        </Slide>
     );
   }
 }
