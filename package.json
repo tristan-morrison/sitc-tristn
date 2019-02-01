@@ -44,7 +44,8 @@
     "loglevel": "^1.6.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-swipeable-views": "^0.13.1"
+    "react-swipeable-views": "^0.13.1",
+    "react-transition-group": "^2.5.3"
   },
   "ava": {
     "require": [
