@@ -24,7 +24,7 @@ class VolunteerListRow extends React.Component {
 
     this.state = {
       avatar: '',
-      show: true
+      // show: true
     }
 
     this.handleCheckInClick = this.handleCheckInClick.bind(this);
@@ -37,15 +37,17 @@ class VolunteerListRow extends React.Component {
 
   exited () {
     loglevel.info("componentWillUnmount ran!");
-    this.props.checkIn(this.props.personId, 4);
   }
 
   handleCheckInClick (event) {
+    this.props.checkIn(this.props.personId, 4);
     loglevel.info("I got clicked!" + this.props.personId);
-    this.setState({show: false});
+    // this.setState({show: false});
   }
 
   render() {
+
+    const show = !this.props.hide;
 
     // set the icon to go in this person's avatar
     let avatarIcon;
@@ -76,7 +78,7 @@ class VolunteerListRow extends React.Component {
     }
 
     return (
-      <Slide in={this.state.show} unmountOnExit onExited={this.exited} direction="left" timeout={{enter: 0, exit: 300}}>
+      <Slide in={show} onExited={this.exited} direction="left" timeout={{enter: 0, exit: 300}}>
         <ListItem key = {this.props.personId}>
           <ListItemIcon>
             {avatar}

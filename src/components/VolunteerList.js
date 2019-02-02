@@ -13,7 +13,7 @@ import sitcAirtable from './../api/sitcAirtable';
 
 const styles = theme => ({
   avatar: {
-    backgroundColor: theme.palette.primary[500]
+    backgroundColor: theme.palette.primary[500],
   }
 });
 
@@ -21,10 +21,18 @@ class VolunteerList extends React.Component {
   constructor (props) {
     super(props);
 
+    this.state = {
+      hide: [],
+    }
+
     this.checkIn = this.checkIn.bind(this);
   }
 
   checkIn (personId, hours) {
+    const hideArr = this.state.hide.slice();
+    this.setState({ hide: hideArr.concat(personId)});
+
+
     if (this.props.checkedInTeers.includes(personId)) {
       loglevel.error("This person is already checked in!!");
       return -1;
@@ -34,6 +42,7 @@ class VolunteerList extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const hide = this.state.hide;
     const teerListItems = [];
     this.props.listToRender.forEach((personID) => {
       teerListItems.push(
@@ -45,6 +54,7 @@ class VolunteerList extends React.Component {
           hours = {this.props.volunteerInfo[personID]['Hours Credited']}
           hasCar = {this.props.volunteerInfo[personID]['Has Car']}
           checkIn = {this.checkIn}
+          hide={hide.includes(personID)}
         />
       );
     });
