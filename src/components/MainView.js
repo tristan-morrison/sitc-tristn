@@ -90,7 +90,7 @@ class MainView extends React.Component {
   }
 
   render () {
-    const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : Object.keys(this.props.volunteerInfo);
+    const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : this.props.notCheckedIn;
 
     if (this.state.loadingTeerData) {
       return null;
@@ -114,7 +114,7 @@ class MainView extends React.Component {
             checkInHandler={this.checkInHandler}
             volunteerInfo={this.props.volunteerInfo}
             checkedInTeers={this.props.checkedInTeers}
-            listToRender={this.props.notCheckedIn}
+            listToRender={listToRender}
           />
           <CheckedInList
             volunteerInfo={this.props.volunteerInfo}
