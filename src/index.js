@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 import * as log from 'loglevel'
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -8,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import green from '@material-ui/core/colors/green';
 import deepOrange from '@material-ui/core/colors/deepOrange';
 
+import Auth from './api/Auth.js';
 import App from './components/App';
 
 log.setLevel("trace");
@@ -22,13 +24,19 @@ const theme = createMuiTheme({
   },
 });
 
+const auth = new Auth();
+
 function Root() {
+  if (!auth.isAuthenticated()) {
+    auth.login();
+  }
+
   return (
-
-    <MuiThemeProvider theme={theme}>
-      <App />
-    </MuiThemeProvider>
-
+    <BrowserRouter>
+      <MuiThemeProvider theme={theme}>
+        <App />
+      </MuiThemeProvider>
+    </BrowserRouter>
   );
 }
 

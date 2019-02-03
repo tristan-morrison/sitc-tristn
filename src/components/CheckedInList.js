@@ -19,6 +19,10 @@ class CheckedInList extends React.Component {
     this.checkOut = this.checkOut.bind(this);
   }
 
+  componentDidMount () {
+    this.props.setTabIndex(1);
+  }
+
   checkOut (personId) {
     loglevel.info('checking out ' + personId);
   }

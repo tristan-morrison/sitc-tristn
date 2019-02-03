@@ -1,5 +1,6 @@
 import React from 'React';
 import ReactDOM from 'react-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
 import Airtable from 'airtable';
 import * as loglevel from 'loglevel';
@@ -29,6 +30,7 @@ class MainView extends React.Component {
     this.checkInHandler = this.checkInHandler.bind(this);
     this.handleTabChange = this.handleTabChange.bind(this);
     this.handleChangeIndex = this.handleChangeIndex.bind(this);
+    this.setTabIndex = this.setTabIndex.bind(this);
   }
 
   // gets volunteer info from the Profiles table
@@ -83,6 +85,17 @@ class MainView extends React.Component {
 
   handleTabChange (event, value) {
     this.setState({tabVal: value});
+    switch (value) {
+      case 0:
+        this.props.history.push('/');
+        break;
+      case 1:
+        this.props.history.push('/checkedIn');
+    }
+  }
+
+  setTabIndex (index) {
+    this.setState({tabVal: index});
   }
 
   handleChangeIndex (index) {
@@ -106,25 +119,36 @@ class MainView extends React.Component {
           <Tab label="Registered" />
           <Tab label="Checked In" />
         </Tabs>
-        <SwipeableViews
+        {/* <SwipeableViews
           index={this.state.tabVal}
           onChangeIndex={this.handleChangeIndex}
-        >
-          <VolunteerList
-            checkInHandler={this.checkInHandler}
-            volunteerInfo={this.props.volunteerInfo}
-            checkedInTeers={this.props.checkedInTeers}
-            listToRender={listToRender}
-          />
-          <CheckedInList
-            volunteerInfo={this.props.volunteerInfo}
-            listToRender={this.props.checkedInTeers}
-          />
-        </SwipeableViews>
+        > */}
+        <Switch>
+          <Route exact path="/" render={routeProps => (
+            <VolunteerList
+              {...routeProps}
+              checkInHandler={this.checkInHandler}
+              volunteerInfo={this.props.volunteerInfo}
+              checkedInTeers={this.props.checkedInTeers}
+              listToRender={listToRender}
+            />
+          )} />
+          <Route path="/checkedIn" render={routeProps => (
+            <CheckedInList
+              {...routeProps}
+              volunteerInfo={this.props.volunteerInfo}
+              listToRender={this.props.checkedInTeers}
+              setTabIndex={this.setTabIndex}
+            />
+          )}/>
+        </Switch>
+
+
+        {/* </SwipeableViews> */}
       </React.Fragment>
     );
 
   }
 }
 
-export default MainView;
+export default withRouter(MainView);
