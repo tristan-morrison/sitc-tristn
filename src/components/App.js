@@ -8,6 +8,8 @@ import { withStyles } from '@material-ui/core/styles';
 
 import TristnAppBar from './TristnAppBar';
 import MainView from './MainView'
+import SiteSelect from './SiteSelect';
+import sitcAirtable from './../api/sitcAirtable';
 import Auth from './../api/Auth';
 
 const styles = theme => ({
@@ -35,17 +37,39 @@ class App extends React.Component {
     this.updateNotCheckedInTeers = this.updateNotCheckedInTeers.bind(this);
     this.setFilter = this.setFilter.bind(this);
     this.handleAuthentication = this.handleAuthentication.bind(this);
+    this.updateDefaultCarpoolSite = this.updateDefaultCarpoolSite.bind(this);
   }
 
   componentDidMount () {
-    const myAuth = new Auth();
-    this.setState({ auth: myAuth});
 
-    
+    let renewSessionPromise = null;
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      renewSessionPromise = this.props.auth.renewSession();
+      loglevel.info("user is logged in!");
+    } else {
+      renewSessionPromise = new Promise((resolve, reject) => resolve());
+    }
+
+    renewSessionPromise.then(() => {
+      if (!this.props.auth.isAuthenticated()) {
+        this.props.auth.login();
+      }
+    });
+
+    const carpoolSitesPromise = sitcAirtable.getCarpoolSites();
+    carpoolSitesPromise.then(siteInfo => {
+      loglevel.info(siteInfo);
+      this.setState({carpoolSites: siteInfo});
+    })
+
   }
 
   updateCarpoolSites (sites) {
     this.setState({carpoolSites: sites});
+  }
+
+  updateDefaultCarpoolSite (siteId) {
+    this.setState({defaultCarpoolSiteId: siteId});
   }
 
   updateVolunteerInfo (info) {
@@ -67,8 +91,8 @@ class App extends React.Component {
     this.setState({filteredVolunteerIds: filteredTeers});
   }
 
-  handleAuthentication () {
-    this.state.auth.handleAuthentication();
+  handleAuthentication (nextState) {
+    this.props.auth.handleAuthentication();
   }
 
   render () {
@@ -78,14 +102,14 @@ class App extends React.Component {
       <div id="Root" className={classes.root}>
         <React.Fragment key="1">
           <TristnAppBar
-              setFilter={this.setFilter}
-              volunteerInfo={this.state.volunteerInfo}
+            setFilter={this.setFilter}
+            volunteerInfo={this.state.volunteerInfo}
           />
           <Switch>
             <Route exact path="/" render={routeProps => (
               <MainView
                 {...routeProps}
-                auth = {this.state.auth}
+                auth = {this.props.auth}
                 updateVolunteerInfo={this.updateVolunteerInfo}
                 updateCheckedInTeers={this.updateCheckedInTeers}
                 updateNotCheckedInTeers={this.updateNotCheckedInTeers}
@@ -96,11 +120,21 @@ class App extends React.Component {
               />
             )} />
             <Route path="/siteSelect" render={routeProps => {
-              this.handleAuthentication();
               return (
-                <h2>Hello, authenticated user!</h2>
+                <SiteSelect
+                  open={true}
+                  carpoolSites={this.state.carpoolSites}
+                  updateDefaultCarpoolSite={this.updateDefaultCarpoolSite}
+                  handleAuthentication={this.handleAuthentication}
+                />
               );
             }} />
+            <Route path="/home" render={routeProps => (
+              <div>
+                <h1>Well this is awkward.</h1>
+                <h4>Wump, wump</h4>
+              </div>
+            )} />
           </Switch>
         </React.Fragment>
       </div>

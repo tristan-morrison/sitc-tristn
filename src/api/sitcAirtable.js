@@ -63,10 +63,43 @@ function getAttendanceRecordsToday () {
 }
 
 function getCarpoolSites () {
+  const myPromise = new Promise((resolve, reject) => {
+    const carpoolSites = {};
 
+    loglevel.info(process.env.AIRTABLE_API_KEY);
+    const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
+
+    base(AIRTABLE.CARPOOL_SITES_TABLE).select({
+      // Selecting the first 3 records in Grid view:
+      maxRecords: 50,
+      view: AIRTABLE.CARPOOL_SITES_VIEW,
+    }).eachPage(function page(records, fetchNextPage) {
+        // This function (`page`) will get called for each page of records.
+
+      records.forEach(function(record) {
+        carpoolSites[record.get('Record ID')] = record.fields;
+      });
+
+      // To fetch the next page of records, call `fetchNextPage`.
+      // If there are more records, `page` will get called again.
+      // If there are no more records, `done` will get called.
+      fetchNextPage();
+
+      }, function done(err) {
+          if (err) {
+            console.error(err); return;
+            reject(err);
+          } else {
+            resolve(carpoolSites);
+          }
+       });
+    });
+
+    return myPromise;
 }
 
 export default {
   checkIn,
-  getAttendanceRecordsToday
+  getAttendanceRecordsToday,
+  getCarpoolSites,
 };

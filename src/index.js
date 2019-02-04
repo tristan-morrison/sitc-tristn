@@ -25,10 +25,14 @@ const theme = createMuiTheme({
 });
 
 function Root() {
+  const myAuth = new Auth();
+
   return (
     <BrowserRouter>
       <MuiThemeProvider theme={theme}>
-        <App />
+        <App
+          auth={myAuth}
+        />
       </MuiThemeProvider>
     </BrowserRouter>
   );

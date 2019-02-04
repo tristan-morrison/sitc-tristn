@@ -1,5 +1,6 @@
 import history from './history';
 import auth0 from 'auth0-js';
+import loglevel from 'loglevel';
 
 export default class Auth {
 
@@ -11,6 +12,10 @@ export default class Auth {
       responseType: 'token id_token',
       scope: 'openid'
     });
+
+    this.accessToken = null;
+    this.idToken = null;
+    this.expiresAt = null;
 
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
@@ -28,6 +33,7 @@ export default class Auth {
   handleAuthentication() {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
+        loglevel.info("About to call setSession");
         this.setSession(authResult);
       } else if (err) {
         history.replace('/home');
@@ -60,15 +66,19 @@ export default class Auth {
   }
 
   renewSession() {
-    this.auth0.checkSession({}, (err, authResult) => {
-       if (authResult && authResult.accessToken && authResult.idToken) {
-         this.setSession(authResult);
-       } else if (err) {
-         this.logout();
-         console.log(err);
-         alert(`Could not get a new token (${err.error}: ${err.error_description}).`);
-       }
+    const myPromise = new Promise((resolve, reject) => {
+      this.auth0.checkSession({}, (err, authResult) => {
+         if (authResult && authResult.accessToken && authResult.idToken) {
+           this.setSession(authResult);
+           resolve();
+         } else if (err) {
+           this.logout();
+           console.log(err);
+           alert(`Could not get a new token (${err.error}: ${err.error_description}).`);
+         }
+      });
     });
+    return myPromise;
   }
 
   logout() {
@@ -88,6 +98,7 @@ export default class Auth {
     // Check whether the current time is past the
     // access token's expiry time
     let expiresAt = this.expiresAt;
+    loglevel.info("expiresAt: " + expiresAt);
     return new Date().getTime() < expiresAt;
   }
 }
