@@ -7,7 +7,7 @@ export default class Auth {
     this.auth0 = new auth0.WebAuth({
       domain: 'summerinthecity.auth0.com',
       clientID: 'XJ5VkwWwHdezACsGozgDoSLFzTdBXAoj',
-      redirectUri: 'http://0.0.0.0:3030',
+      redirectUri: 'http://0.0.0.0:3030/siteSelect',
       responseType: 'token id_token',
       scope: 'openid'
     });

@@ -1,5 +1,6 @@
 import React from 'React';
 import ReactDOM from 'react-dom';
+import { Switch, Route } from 'react-router-dom';
 import Airtable from 'airtable';
 import loglevel from 'loglevel';
 
@@ -7,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import TristnAppBar from './TristnAppBar';
 import MainView from './MainView'
+import Auth from './../api/Auth';
 
 const styles = theme => ({
   root: {
@@ -23,12 +25,27 @@ class App extends React.Component {
       filteredVolunteerIds: [],
       checkedInTeers: [],
       notCheckedInTeers: [],
+      auth: new Auth(),
+      carpoolSites: {},
+      defaultCarpoolSiteId: '',
     }
 
     this.updateVolunteerInfo = this.updateVolunteerInfo.bind(this);
     this.updateCheckedInTeers = this.updateCheckedInTeers.bind(this);
     this.updateNotCheckedInTeers = this.updateNotCheckedInTeers.bind(this);
     this.setFilter = this.setFilter.bind(this);
+    this.handleAuthentication = this.handleAuthentication.bind(this);
+  }
+
+  componentDidMount () {
+    const myAuth = new Auth();
+    this.setState({ auth: myAuth});
+
+    
+  }
+
+  updateCarpoolSites (sites) {
+    this.setState({carpoolSites: sites});
   }
 
   updateVolunteerInfo (info) {
@@ -50,6 +67,10 @@ class App extends React.Component {
     this.setState({filteredVolunteerIds: filteredTeers});
   }
 
+  handleAuthentication () {
+    this.state.auth.handleAuthentication();
+  }
+
   render () {
     const { classes } = this.props;
 
@@ -60,15 +81,27 @@ class App extends React.Component {
               setFilter={this.setFilter}
               volunteerInfo={this.state.volunteerInfo}
           />
-          <MainView
-            updateVolunteerInfo={this.updateVolunteerInfo}
-            updateCheckedInTeers={this.updateCheckedInTeers}
-            updateNotCheckedInTeers={this.updateNotCheckedInTeers}
-            volunteerInfo={this.state.volunteerInfo}
-            filteredVolunteerIds={this.state.filteredVolunteerIds}
-            checkedInTeers={this.state.checkedInTeers}
-            notCheckedIn={this.state.notCheckedInTeers}
-          />
+          <Switch>
+            <Route exact path="/" render={routeProps => (
+              <MainView
+                {...routeProps}
+                auth = {this.state.auth}
+                updateVolunteerInfo={this.updateVolunteerInfo}
+                updateCheckedInTeers={this.updateCheckedInTeers}
+                updateNotCheckedInTeers={this.updateNotCheckedInTeers}
+                volunteerInfo={this.state.volunteerInfo}
+                filteredVolunteerIds={this.state.filteredVolunteerIds}
+                checkedInTeers={this.state.checkedInTeers}
+                notCheckedIn={this.state.notCheckedInTeers}
+              />
+            )} />
+            <Route path="/siteSelect" render={routeProps => {
+              this.handleAuthentication();
+              return (
+                <h2>Hello, authenticated user!</h2>
+              );
+            }} />
+          </Switch>
         </React.Fragment>
       </div>
     )

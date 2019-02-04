@@ -62,6 +62,10 @@ function getAttendanceRecordsToday () {
   return myPromise;
 }
 
+function getCarpoolSites () {
+
+}
+
 export default {
   checkIn,
   getAttendanceRecordsToday

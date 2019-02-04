@@ -24,13 +24,7 @@ const theme = createMuiTheme({
   },
 });
 
-const auth = new Auth();
-
 function Root() {
-  if (!auth.isAuthenticated()) {
-    auth.login();
-  }
-
   return (
     <BrowserRouter>
       <MuiThemeProvider theme={theme}>

@@ -35,6 +35,10 @@ class MainView extends React.Component {
 
   // gets volunteer info from the Profiles table
   componentDidMount () {
+    if (!this.props.auth.isAuthenticated()) {
+      this.props.auth.login();
+    }
+
     let self = this;
 
     const attendancePromise = sitcAirtable.getAttendanceRecordsToday();
