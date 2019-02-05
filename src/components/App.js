@@ -30,6 +30,7 @@ class App extends React.Component {
       auth: new Auth(),
       carpoolSites: {},
       defaultCarpoolSiteId: '',
+      headsUpTeers: {},
     }
 
     this.updateVolunteerInfo = this.updateVolunteerInfo.bind(this);
@@ -37,6 +38,7 @@ class App extends React.Component {
     this.updateNotCheckedInTeers = this.updateNotCheckedInTeers.bind(this);
     this.setFilter = this.setFilter.bind(this);
     this.updateDefaultCarpoolSite = this.updateDefaultCarpoolSite.bind(this);
+    this.updateHeadsUpTeers = this.updateHeadsUpTeers.bind(this);
   }
 
   componentDidMount () {
@@ -82,6 +84,10 @@ class App extends React.Component {
     loglevel.info(info);
   }
 
+  updateHeadsUpTeers (info) {
+    this.setState({headsUpTeers: info});
+  }
+
   setFilter (filteredTeers) {
     loglevel.debug(filteredTeers);
     this.setState({filteredVolunteerIds: filteredTeers});
@@ -102,10 +108,13 @@ class App extends React.Component {
             updateVolunteerInfo={this.updateVolunteerInfo}
             updateCheckedInTeers={this.updateCheckedInTeers}
             updateNotCheckedInTeers={this.updateNotCheckedInTeers}
+            updateHeadsUpTeers={this.updateHeadsUpTeers}
             volunteerInfo={this.state.volunteerInfo}
             filteredVolunteerIds={this.state.filteredVolunteerIds}
             checkedInTeers={this.state.checkedInTeers}
             notCheckedIn={this.state.notCheckedInTeers}
+            headsUpTeers={this.state.headsUpTeers}
+            carpoolSites={this.state.carpoolSites}
           />
         </React.Fragment>
       </div>

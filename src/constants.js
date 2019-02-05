@@ -4,6 +4,8 @@ export const AIRTABLE = {
   ATTENDANCE_VIEW: 'Grid view',
   CARPOOL_SITES_TABLE: 'Carpool Sites',
   CARPOOL_SITES_VIEW: 'Grid view',
+  HEADS_UP_TABLE: 'Heads Up',
+  HEADS_UP_VIEW: 'Grid view',
   TIME_ZONE: 'America/Detroit',
 }
 

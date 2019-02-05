@@ -85,7 +85,7 @@ class VolunteerListRow extends React.Component {
           </ListItemIcon>
           <ListItemText
             primary = {this.props.firstName + ' ' + this.props.lastName}
-            secondary = {this.props.hours + ' Hours' + " | " + this.props.personId}>
+            secondary = {this.props.hours + ' Hours' + " | " + this.props.carpoolSites[this.props.primaryCarpoolSite]['Shortname']}>
           </ListItemText>
           <ListItemSecondaryAction>
             <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>

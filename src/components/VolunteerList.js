@@ -53,6 +53,8 @@ class VolunteerList extends React.Component {
           paid = {this.props.volunteerInfo[personID]['Paid']}
           hours = {this.props.volunteerInfo[personID]['Hours Credited']}
           hasCar = {this.props.volunteerInfo[personID]['Has Car']}
+          primaryCarpoolSite = {this.props.volunteerInfo[personID]['Primary Carpool']}
+          carpoolSites = {this.props.carpoolSites}
           checkIn = {this.checkIn}
           hide={hide.includes(personID)}
         />

@@ -35,14 +35,18 @@ class MainView extends React.Component {
 
   // gets volunteer info from the Profiles table
   componentDidMount () {
-    
+
 
     let self = this;
 
     const attendancePromise = sitcAirtable.getAttendanceRecordsToday();
-    const updatePromise = attendancePromise.then(info => this.props.updateCheckedInTeers(info));
+    const headsUpPromise = attendancePromise
+      .then(info => this.props.updateCheckedInTeers(info))
+      .then(() => {return  sitcAirtable.getHeadsUp()})
+      .then(info => this.props.updateHeadsUpTeers(info));
 
-    updatePromise.then(() => {
+    headsUpPromise.then(() => {
+      loglevel.info(this.props.headsUpTeers);
       const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
 
       const volunteers = {};
@@ -52,10 +56,14 @@ class MainView extends React.Component {
         view: "Grid view"
       }).eachPage((records, fetchNextPage) => {
           records.forEach(function (record) {
-            loglevel.debug(record.fields['PersonID']);
-            volunteers[record.fields['PersonID']] = record.fields;
-            if (!self.props.checkedInTeers.includes(record.fields['PersonID'])) {
-              self.props.notCheckedIn.push(record.fields['PersonID']);
+            const personId = record.fields['PersonID'];
+            volunteers[personId] = record.fields;
+            if (!self.props.checkedInTeers.includes(personId)) {
+              self.props.notCheckedIn.push(personId);
+            }
+            if (Object.keys(self.props.headsUpTeers).includes(personId)) {
+              volunteers[personId]['isHeadsUp'] = true;
+              volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
             }
           });
 
@@ -133,6 +141,8 @@ class MainView extends React.Component {
               volunteerInfo={this.props.volunteerInfo}
               checkedInTeers={this.props.checkedInTeers}
               listToRender={listToRender}
+              headsUpTeers={this.props.headsUpTeers}
+              carpoolSites={this.props.carpoolSites}
             />
           )} />
           <Route path="/checkedIn" render={routeProps => (
