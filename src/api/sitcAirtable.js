@@ -32,7 +32,7 @@ function checkIn (personId, hours) {
 
 function getAttendanceRecordsToday () {
   const myPromise = new Promise((resolve, reject) => {
-    const nowInDetroit = new Date();
+    const nowInDetroit = myDatetime.getTimeInDetroit();
     // thanks to user113716 on SO for the clever way to add leading zeros without any comparisons
     // https://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date
     const nowInDetroitStr = nowInDetroit.getFullYear() + "-" + ("0" + (nowInDetroit.getMonth() + 1)).slice(-2) + "-" + ("0" + nowInDetroit.getDate()).slice(-2);

@@ -20,6 +20,7 @@ class CheckedInList extends React.Component {
   }
 
   componentDidMount () {
+    loglevel.info("mounted CheckedInList!");
     this.props.setTabIndex(1);
   }
 

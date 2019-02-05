@@ -20,6 +20,8 @@ import lightGreen from '@material-ui/core/colors/lightGreen';
 import pink from '@material-ui/core/colors/pink';
 import red from '@material-ui/core/colors/red';
 
+import sitcAirtable from './../api/sitcAirtable';
+
 const COLORS = [
   'deepPurple',
   'deepOrange',
@@ -64,35 +66,39 @@ class SiteSelect extends React.Component {
     super();
 
     this.state = {
-      open: true,
+      open: false,
+      carpoolSites: [],
     }
   }
 
   componentDidMount () {
-    loglevel.info("componentDidMount ran");
-    this.props.handleAuthentication();
+    this.props.auth.handleAuthentication();
+
+    const carpoolSitesPromise = sitcAirtable.getCarpoolSites();
+    carpoolSitesPromise.then(carpoolSites => this.setState({carpoolSites: carpoolSites, open: true}));
   }
 
   close () {
     loglevel.info("Closing dialog!");
+    this.setState({ open: false })
   }
 
   handleClick (siteId) {
-    this.props.updateDefaultCarpoolSite(siteId);
+    localStorage.setItem("defaultCarpoolSiteId", siteId);
     this.setState({open: false});
     this.props.history.push("/");
   }
 
   render () {
     const { classes } = this.props;
-    const { carpoolSites } = this.props;
+    const { carpoolSites } = this.state;
 
     return (
       <Dialog onClose={this.close} open={this.state.open}>
         <DialogTitle>Default Carpool Site</DialogTitle>
         <div>
           <List>
-            {Object.keys(this.props.carpoolSites).map(carpoolSiteId => (
+            {Object.keys(this.state.carpoolSites).map(carpoolSiteId => (
               <ListItem button onClick={() => this.handleClick(carpoolSiteId)}>
                 <ListItemAvatar>
                   <Avatar className={classes[COLORS.splice(Math.floor(Math.random() * COLORS.length), 1)[0]]}>

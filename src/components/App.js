@@ -36,25 +36,21 @@ class App extends React.Component {
     this.updateCheckedInTeers = this.updateCheckedInTeers.bind(this);
     this.updateNotCheckedInTeers = this.updateNotCheckedInTeers.bind(this);
     this.setFilter = this.setFilter.bind(this);
-    this.handleAuthentication = this.handleAuthentication.bind(this);
     this.updateDefaultCarpoolSite = this.updateDefaultCarpoolSite.bind(this);
   }
 
   componentDidMount () {
 
-    let renewSessionPromise = null;
     if (localStorage.getItem('isLoggedIn') === 'true') {
-      renewSessionPromise = this.props.auth.renewSession();
-      loglevel.info("user is logged in!");
+      const renewSessionPromise = this.props.auth.renewSession();
+      renewSessionPromise.then(() => {
+        if (!this.props.auth.isAuthenticated()) {
+          this.props.auth.login();
+        }
+      })
     } else {
-      renewSessionPromise = new Promise((resolve, reject) => resolve());
+      this.props.auth.login();
     }
-
-    renewSessionPromise.then(() => {
-      if (!this.props.auth.isAuthenticated()) {
-        this.props.auth.login();
-      }
-    });
 
     const carpoolSitesPromise = sitcAirtable.getCarpoolSites();
     carpoolSitesPromise.then(siteInfo => {
@@ -91,10 +87,6 @@ class App extends React.Component {
     this.setState({filteredVolunteerIds: filteredTeers});
   }
 
-  handleAuthentication (nextState) {
-    this.props.auth.handleAuthentication();
-  }
-
   render () {
     const { classes } = this.props;
 
@@ -105,37 +97,16 @@ class App extends React.Component {
             setFilter={this.setFilter}
             volunteerInfo={this.state.volunteerInfo}
           />
-          <Switch>
-            <Route exact path="/" render={routeProps => (
-              <MainView
-                {...routeProps}
-                auth = {this.props.auth}
-                updateVolunteerInfo={this.updateVolunteerInfo}
-                updateCheckedInTeers={this.updateCheckedInTeers}
-                updateNotCheckedInTeers={this.updateNotCheckedInTeers}
-                volunteerInfo={this.state.volunteerInfo}
-                filteredVolunteerIds={this.state.filteredVolunteerIds}
-                checkedInTeers={this.state.checkedInTeers}
-                notCheckedIn={this.state.notCheckedInTeers}
-              />
-            )} />
-            <Route path="/siteSelect" render={routeProps => {
-              return (
-                <SiteSelect
-                  open={true}
-                  carpoolSites={this.state.carpoolSites}
-                  updateDefaultCarpoolSite={this.updateDefaultCarpoolSite}
-                  handleAuthentication={this.handleAuthentication}
-                />
-              );
-            }} />
-            <Route path="/home" render={routeProps => (
-              <div>
-                <h1>Well this is awkward.</h1>
-                <h4>Wump, wump</h4>
-              </div>
-            )} />
-          </Switch>
+          <MainView
+            auth = {this.props.auth}
+            updateVolunteerInfo={this.updateVolunteerInfo}
+            updateCheckedInTeers={this.updateCheckedInTeers}
+            updateNotCheckedInTeers={this.updateNotCheckedInTeers}
+            volunteerInfo={this.state.volunteerInfo}
+            filteredVolunteerIds={this.state.filteredVolunteerIds}
+            checkedInTeers={this.state.checkedInTeers}
+            notCheckedIn={this.state.notCheckedInTeers}
+          />
         </React.Fragment>
       </div>
     )

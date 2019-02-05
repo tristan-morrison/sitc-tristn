@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import * as log from 'loglevel'
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
@@ -11,6 +11,7 @@ import deepOrange from '@material-ui/core/colors/deepOrange';
 
 import Auth from './api/Auth.js';
 import App from './components/App';
+import SiteSelect from './components/SiteSelect';
 
 log.setLevel("trace");
 
@@ -29,11 +30,21 @@ function Root() {
 
   return (
     <BrowserRouter>
-      <MuiThemeProvider theme={theme}>
-        <App
-          auth={myAuth}
-        />
-      </MuiThemeProvider>
+      <Switch>
+        <Route path='/siteSelect' render={routeProps => (
+          <SiteSelect
+            auth={myAuth}
+          />
+        )} />
+        <Route path="/" render={routeProps => (
+          <MuiThemeProvider theme={theme}>
+            <App
+              {...routeProps}
+              auth={myAuth}
+            />
+          </MuiThemeProvider>
+        )} />
+      </Switch>
     </BrowserRouter>
   );
 }

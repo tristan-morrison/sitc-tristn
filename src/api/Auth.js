@@ -4,11 +4,21 @@ import loglevel from 'loglevel';
 
 export default class Auth {
 
+  // workaround so that site can be accessed from my phone during development
+
+
   constructor() {
+    let myBaseUri = '';
+    if (window.location.href.includes("192.168")) {
+      myBaseUri = "192.168.86.55";
+    } else {
+      myBaseUri = "0.0.0.0";
+    }
+
     this.auth0 = new auth0.WebAuth({
       domain: 'summerinthecity.auth0.com',
       clientID: 'XJ5VkwWwHdezACsGozgDoSLFzTdBXAoj',
-      redirectUri: 'http://0.0.0.0:3030/siteSelect',
+      redirectUri: `http://${myBaseUri}:3030/siteSelect`,
       responseType: 'token id_token',
       scope: 'openid'
     });
@@ -62,7 +72,7 @@ export default class Auth {
     this.expiresAt = expiresAt;
 
     // navigate to the home route
-    history.replace('/home');
+    // history.replace('/home');
   }
 
   renewSession() {
