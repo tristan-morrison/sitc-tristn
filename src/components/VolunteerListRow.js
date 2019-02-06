@@ -40,7 +40,9 @@ class VolunteerListRow extends React.Component {
   }
 
   handleCheckInClick (event) {
-    this.props.checkIn(this.props.personId, 4);
+    // this.props.checkIn(this.props.personId, 4);
+    const dialogPromise = this.props.checkInDialog(this.props.personId);
+    dialogPromise.then(info => this.props.checkIn(this.props.personId));
     loglevel.info("I got clicked!" + this.props.personId);
     // this.setState({show: false});
   }

@@ -29,11 +29,10 @@ class VolunteerList extends React.Component {
 
     this.checkIn = this.checkIn.bind(this);
     this.closeDialog = this.closeDialog.bind(this);
+    this.checkInDialog = this.checkInDialog.bind(this);
   }
 
   checkIn (personId, hours) {
-    const dialogPromise = this.checkInDialog(personId);
-    dialogPromise.then(info => loglevel.info(info));
 
     const hideArr = this.state.hide.slice();
     this.setState({ hide: hideArr.concat(personId)});
@@ -62,6 +61,7 @@ class VolunteerList extends React.Component {
   }
 
   closeDialog() {
+    loglevel.info("closeDialog was run");
     this.setState({dialog: null});
   }
 
@@ -81,6 +81,7 @@ class VolunteerList extends React.Component {
           primaryCarpoolSite = {this.props.volunteerInfo[personID]['Primary Carpool']}
           carpoolSites = {this.props.carpoolSites}
           checkIn = {this.checkIn}
+          checkInDialog = {this.checkInDialog}
           hide={hide.includes(personID)}
         />
       );
