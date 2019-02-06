@@ -9,6 +9,7 @@ import List from '@material-ui/core/List';
 
 
 import VolunteerListRow from './VolunteerListRow';
+import CheckInDialog from './CheckInDialog';
 import sitcAirtable from './../api/sitcAirtable';
 
 const styles = theme => ({
@@ -23,12 +24,17 @@ class VolunteerList extends React.Component {
 
     this.state = {
       hide: [],
+      dialog: null,
     }
 
     this.checkIn = this.checkIn.bind(this);
+    this.closeDialog = this.closeDialog.bind(this);
   }
 
   checkIn (personId, hours) {
+    const dialogPromise = this.checkInDialog(personId);
+    dialogPromise.then(info => loglevel.info(info));
+
     const hideArr = this.state.hide.slice();
     this.setState({ hide: hideArr.concat(personId)});
 
@@ -38,6 +44,25 @@ class VolunteerList extends React.Component {
       return -1;
     }
     this.props.checkInHandler(personId, hours)
+  }
+
+  checkInDialog (personId) {
+    const myPromise = new Promise((resolve, reject) => {
+      const dialog = (
+        <CheckInDialog
+          resolve={resolve}
+          closeDialog={this.closeDialog}
+          personId = {personId}
+          personInfo = {this.props.volunteerInfo[personId]}
+        />
+      );
+      this.setState({dialog: dialog});
+    });
+    return myPromise
+  }
+
+  closeDialog() {
+    this.setState({dialog: null});
   }
 
   render() {
@@ -62,9 +87,12 @@ class VolunteerList extends React.Component {
     });
 
     return (
-      <List>
-        {teerListItems}
-      </List>
+      <React.Fragment>
+        <List>
+          {teerListItems}
+        </List>
+        {this.state.dialog}
+      </React.Fragment>
     );
   }
 

@@ -95,7 +95,7 @@ class SiteSelect extends React.Component {
 
     return (
       <Dialog onClose={this.close} open={this.state.open}>
-        <DialogTitle>Default Carpool Site</DialogTitle>
+        <DialogTitle>Set carpool site</DialogTitle>
         <div>
           <List>
             {Object.keys(this.state.carpoolSites).map(carpoolSiteId => (
