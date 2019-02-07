@@ -95,7 +95,6 @@ class CheckInDialog extends React.Component {
             </Button>
           }
           nextButton={
-            <div style={{flexBasis: "40"}} />
           }
         />
       </Dialog>
