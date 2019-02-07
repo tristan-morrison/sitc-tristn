@@ -12,6 +12,12 @@ function getTimeInDetroit () {
   return myDate;
 }
 
+function convertDetroitToUTC (dateToConvert) {
+  const myDateToConvert = new Date(dateToConvert.getTime());
+  myDateToConvert.setTime(myDateToConvert.getTime() + (getDetroitUtcOffsetInHours(myDateToConvert) * TIME.MILLISECS_IN_HOUR));
+  return myDateToConvert;
+}
+
 function getDetroitUtcOffsetInHours (onDate) {
   const dateInJan = new Date();
   dateInJan.setMonth(0);
@@ -28,5 +34,6 @@ function getDetroitUtcOffsetInHours (onDate) {
 
 export default {
   getTimeInDetroit,
+  convertDetroitToUTC,
   getDetroitUtcOffsetInHours
 }

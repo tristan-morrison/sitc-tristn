@@ -46,7 +46,9 @@ function getAttendanceRecordsToday () {
 
     base(AIRTABLE.ATTENDANCE_TABLE).select({
       view: AIRTABLE.ATTENDANCE_VIEW,
-      filterByFormula: `IS_SAME({Date}, DATETIME_PARSE('${nowInDetroitStr}'), 'day')`,
+      // cellFormat: 'string',
+      // userLocale: 'en-us',
+      filterByFormula: `DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}'`,
       timeZone: AIRTABLE.TIME_ZONE,
     }).eachPage(function page(records, fetchNextPage) {
       records.forEach(record => checkedInTeers.push(record.get('Volunteer ID')[0]));
