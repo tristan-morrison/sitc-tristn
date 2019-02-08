@@ -13,6 +13,7 @@ import MobileStepper from '@material-ui/core/MobileStepper';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Switch from '@material-ui/core/Switch'
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 
 const styles = theme => ({
@@ -33,11 +34,32 @@ class CheckInDialog extends React.Component {
     this.state = {
       open: true,
       viewIndex: 0,
-      details: {},
+      details: {
+        canDrive: false,
+        paidToday: false,
+        hours: 4,
+      },
+      viewsToShow: [2],
+      totalViewsToShow: 1,
     };
 
     this.close = this.close.bind(this);
     this.updateViewIndex = this.updateViewIndex.bind(this);
+    this.popView = this.popView.bind(this);
+  }
+
+  componentDidMount () {
+    const updatedViewsToShow = this.state.viewsToShow.slice();
+
+    if (this.props.personInfo['Has Car']) {
+      updatedViewsToShow.unshift(1);
+    }
+
+    if (!this.props.personInfo['Paid']) {
+      updatedViewsToShow.unshift(0);
+    }
+
+    this.setState({ viewsToShow: updatedViewsToShow, totalViewsToShow: updatedViewsToShow.length});
   }
 
   close () {
@@ -46,8 +68,10 @@ class CheckInDialog extends React.Component {
     this.props.closeDialog();
   }
 
-  handleStepChange () {
-
+  popView () {
+    const updatedViewsToShow = this.state.viewsToShow.slice();
+    updatedViewsToShow.shift();
+    this.setState({ viewsToShow: updatedViewsToShow});
   }
 
   updateViewIndex (index) {
@@ -64,26 +88,34 @@ class CheckInDialog extends React.Component {
 
     return (
       <Dialog onClose={this.close} open={this.state.open}>
-        <SwipeableViews index={this.state.viewIndex} onChangeIndex={this.handleStepChange} disabled="true">
-            <div>
-              <DialogContent>
-                <DialogContentText>
-                  Did {firstName} pay the registration fee today?
-                </DialogContentText>
-              </DialogContent>
-            </div>
-            <div>
-              <DialogContent>
-                <DialogContentText>
-                  Can {firstName} drive today?
-                </DialogContentText>
-              </DialogContent>
-            </div>
+        <SwipeableViews index={this.state.viewsToShow[0]} onChangeIndex={this.handleStepChange} disabled="true">
+          <div>
+            <DialogContent>
+              <DialogContentText>
+                Did {firstName} pay the registration fee today?
+              </DialogContentText>
+            </DialogContent>
+          </div>
+          <div>
+            <DialogContent>
+              <DialogContentText>
+                Can {firstName} drive today?
+              </DialogContentText>
+            </DialogContent>
+          </div>
+          <div>
+            <DialogContent>
+              <DialogContentText>
+                Does this look right?
+              </DialogContentText>
+              <
+            </DialogContent>
+          </div>
         </SwipeableViews>
         <MobileStepper
-          steps={2}
+          steps={this.state.totalViewsToShow}
           position="static"
-          activeStep={this.state.viewIndex}
+          activeStep={this.state.viewsToShow[0]}
           classes={{root: classes.stepperRoot, dots: classes.dotsContainer}}
           variant="dots"
           backButton={
@@ -97,7 +129,7 @@ class CheckInDialog extends React.Component {
           nextButton={
             <div style={{display: 'flex', justifyContent: 'flex-end', flexBasis: "40%"}}>
               <Button>No</Button>
-              <Button color="primary">Yes</Button>
+              <Button color="primary" onClick={this.popView}>Yes</Button>
             </div>
           }
         />

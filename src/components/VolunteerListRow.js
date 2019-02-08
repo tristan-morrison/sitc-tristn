@@ -31,10 +31,6 @@ class VolunteerListRow extends React.Component {
     this.exited = this.exited.bind(this);
   }
 
-  componentDidMount () {
-
-  }
-
   exited () {
     loglevel.info("componentWillUnmount ran!");
   }
