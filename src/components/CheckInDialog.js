@@ -18,6 +18,10 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 const styles = theme => ({
   stepperRoot: {
     flexDirection: 'row',
+  },
+  dotsContainer: {
+    flexBasis: '20%',
+    justifyContent: 'center',
   }
 });
 
@@ -29,6 +33,7 @@ class CheckInDialog extends React.Component {
     this.state = {
       open: true,
       viewIndex: 0,
+      details: {},
     };
 
     this.close = this.close.bind(this);
@@ -66,10 +71,6 @@ class CheckInDialog extends React.Component {
                   Did {firstName} pay the registration fee today?
                 </DialogContentText>
               </DialogContent>
-              <DialogActions>
-                <Button>No</Button>
-                <Button onClick={this.updateViewIndex}>Yes</Button>
-              </DialogActions>
             </div>
             <div>
               <DialogContent>
@@ -77,24 +78,27 @@ class CheckInDialog extends React.Component {
                   Can {firstName} drive today?
                 </DialogContentText>
               </DialogContent>
-              <DialogActions>
-                <Button>No</Button>
-                <Button>Yes</Button>
-              </DialogActions>
             </div>
         </SwipeableViews>
         <MobileStepper
           steps={2}
           position="static"
           activeStep={this.state.viewIndex}
-          classes={{root: classes.stepperRoot}}
+          classes={{root: classes.stepperRoot, dots: classes.dotsContainer}}
+          variant="dots"
           backButton={
-            <Button size="small" onClick={this.handleBack} style={{flexBasis: "40"}}>
-              <KeyboardArrowLeft />
-              Back
-            </Button>
+            <div style={{flexBasis: "40%", justifyContent: 'flex-start'}}>
+              {this.state.viewIndex > 0 && (<Button size="small" onClick={this.handleBack} >
+                <KeyboardArrowLeft />
+                Back
+              </Button>)}
+            </div>
           }
           nextButton={
+            <div style={{display: 'flex', justifyContent: 'flex-end', flexBasis: "40%"}}>
+              <Button>No</Button>
+              <Button color="primary">Yes</Button>
+            </div>
           }
         />
       </Dialog>
