@@ -4,7 +4,7 @@ const webpack = require('webpack')
 const Dotenv = require('dotenv-webpack');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/client/index.js',
   module: {
     rules: [
       {

@@ -22,3 +22,7 @@ export const ORG = {
   DEFAULT_HOURS: 4,
   DRIVER_HOURS: 5,
 }
+
+export const OAUTH = {
+  CLIENT_ID: '327669513187-g1l5kkhp7nfaun0supjo3kl0u90idafd.apps.googleusercontent.com',
+}
