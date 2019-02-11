@@ -27,6 +27,16 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import AttachMoney from '@material-ui/icons/AttachMoney';
 import Check from '@material-ui/icons/Check';
 import PriorityHigh from '@material-ui/icons/PriorityHigh';
+import AirlineSeatReclineNormalIcon from '@material-ui/icons/AirlineSeatReclineNormal';
+import DriveEtaIcon from '@material-ui/icons/DriveEta';
+import RemoveIcon from '@material-ui/icons/Remove';
+import PlusOneIcon from '@material-ui/icons/PlusOne';
+import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBoxOutlined';
+import ExposurePlus2Icon from '@material-ui/icons/ExposurePlus2';
+
+import { ORG } from './../constants';
+
+const INDEX_TO_PROP = ['paidToday', 'canDrive'];
 
 const styles = theme => ({
   stepperRoot: {
@@ -65,8 +75,50 @@ const styles = theme => ({
   },
   alignLeft: {
     paddingLeft: '3px',
+  },
+  icon: {
+    marginTop: '6px',
+  },
+  iconTransparent: {
+    opacity: 0
+  },
+  nextButton: {
+    marginLeft: '10px'
   }
 });
+
+class NextButton extends React.Component {
+  constructor () {
+    super();
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick () {
+    if (this.props.isLastSlide) {
+      if (this.props.buttonVal) {
+        this.props.handleConfirm();
+      } else {
+        this.props.cancel()
+      }
+    } else {
+      this.props.handleNext(this.props.buttonVal);
+    }
+  }
+
+  render () {
+    return (
+      <Button
+        variant={this.props.buttonVariant || 'text'}
+        color={this.props.buttonColor || 'default'}
+        onClick={this.handleClick}
+        className={this.props.myClassName}
+        >
+          {this.props.children}
+      </Button>
+    );
+  }
+}
 
 class CheckInDialog extends React.Component {
 
@@ -91,6 +143,8 @@ class CheckInDialog extends React.Component {
     this.updateViewIndex = this.updateViewIndex.bind(this);
     this.popView = this.popView.bind(this);
     this.handleBack = this.handleBack.bind(this);
+    this.handleNext = this.handleNext.bind(this);
+    this.handleConfirm = this.handleConfirm.bind(this);
   }
 
   componentDidMount () {
@@ -109,7 +163,6 @@ class CheckInDialog extends React.Component {
 
   close () {
     this.setState({open: false});
-    this.props.resolve("Resolved the dialog promise!");
     this.props.closeDialog();
   }
 
@@ -133,8 +186,49 @@ class CheckInDialog extends React.Component {
     this.setState({viewsToShow: updatedViewsToShow, viewsShown: updatedViewsShown});
   }
 
+  handleNext (propVal) {
+    const index = this.state.viewsToShow[0];
+    const prop = INDEX_TO_PROP[index];
+
+    // if setting paidToday to true, also set amountPaid to default registration fee
+    let updatedAmountPaid = this.state.details.amountPaid;
+    if (index == 0) {
+      if (propVal) {
+        updatedAmountPaid = ORG.REGISTRATION_FEE;
+      } else {
+        updatedAmountPaid = 0;
+      }
+    }
+
+    let updatedHours = this.state.details.hours;
+    if (index == 1) {
+      if (propVal) {
+        updatedHours = ORG.DRIVER_HOURS;
+      } else {
+        updatedHours = ORG.DEFAULT_HOURS;
+      }
+    }
+
+    this.setState(prevState => ({
+      details: {
+        ...prevState.details,
+        [prop]: propVal,
+        amountPaid: updatedAmountPaid,
+        hours: updatedHours,
+      }
+    }));
+
+    this.popView();
+  }
+
+  handleConfirm () {
+    this.props.resolve(this.state.details);
+    this.close();
+  }
+
   render () {
     const firstName = this.props.personInfo['First Name'];
+    const isLastSlide = this.state.viewsToShow[0] == 2;
     const { classes } = this.props;
 
     return (
@@ -159,22 +253,34 @@ class CheckInDialog extends React.Component {
               <TableBody>
                 <TableRow>
                     <TableCell>Payment</TableCell>
-                    {this.props.hasPaid && (
-                      <TableCell>
-                        <div className={classes.cellDiv}>
-                          <Check />
-                          <Typography variant='subtitle2'>Already Paid</Typography>
-                        </div>
-                      </TableCell>
-                    )}
-                    {!this.props.hasPaid && (
+                    {this.props.personInfo['Paid'] && (
                       <React.Fragment>
                         <TableCell
                           padding="dense"
                           align="right"
                           classes={{alignRight: classes.alignRight}}
                           >
-                            <PriorityHigh />
+                            <Check className={classes.icon} />
+                        </TableCell>
+                        <TableCell
+                          padding="dense"
+                          align="left"
+                          classes={{alignLeft: classes.alignLeft }}
+                          >
+                            <div className={classes.cellDiv}>
+                              <Typography variant='subtitle2'>Already Paid</Typography>
+                            </div>
+                        </TableCell>
+                      </React.Fragment>
+                    )}
+                    {!this.props.personInfo['Paid'] && !this.state.details.paidToday && (
+                      <React.Fragment>
+                        <TableCell
+                          padding="dense"
+                          align="right"
+                          classes={{alignRight: classes.alignRight}}
+                          >
+                            <PriorityHigh className={classes.icon} />
                         </TableCell>
                         <TableCell
                           padding="dense"
@@ -189,16 +295,130 @@ class CheckInDialog extends React.Component {
                     )}
                     {this.state.details.paidToday && (
                       <React.Fragment>
-                        <TableCell>
-                          <AttachMoney />
+                        <TableCell
+                          padding="dense"
+                          align="right"
+                          classes={{alignRight: classes.alignRight}}
+                          >
+                            <AttachMoney className={classes.icon} />
                         </TableCell>
-                        <TableCell>
-                          <div className={classes.cellDiv}>
-                            <Typography variant='subtitle2'>Paid ${40}.00</Typography>
-                          </div>
+                        <TableCell
+                          padding="dense"
+                          align="left"
+                          classes={{alignLeft: classes.alignLeft }}
+                          >
+                            <div className={classes.cellDiv}>
+                              <Typography variant='subtitle2'>Paid ${this.state.details.amountPaid}.00</Typography>
+                            </div>
                         </TableCell>
                       </React.Fragment>
                     )}
+                </TableRow>
+                <TableRow>
+                  <TableCell>Driving</TableCell>
+                  {this.state.details.canDrive && (
+                    <React.Fragment>
+                      <TableCell
+                        padding="dense"
+                        align="right"
+                        classes={{alignRight: classes.alignRight}}
+                        >
+                          <DriveEtaIcon className={classes.icon} />
+                      </TableCell>
+                      <TableCell
+                        padding="dense"
+                        align="left"
+                        classes={{alignLeft: classes.alignLeft }}
+                        >
+                          <div className={classes.cellDiv}>
+                            <Typography variant='subtitle2'>Yes</Typography>
+                          </div>
+                      </TableCell>
+                    </React.Fragment>
+                  )}
+                  {!this.state.details.canDrive && (
+                    <React.Fragment>
+                      <TableCell
+                        padding="dense"
+                        align="right"
+                        classes={{alignRight: classes.alignRight}}
+                        >
+                          <AirlineSeatReclineNormalIcon className={classes.icon} />
+                      </TableCell>
+                      <TableCell
+                        padding="dense"
+                        align="left"
+                        classes={{alignLeft: classes.alignLeft }}
+                        >
+                          <div className={classes.cellDiv}>
+                            <Typography variant='subtitle2'>No</Typography>
+                          </div>
+                      </TableCell>
+                    </React.Fragment>
+                  )}
+                </TableRow>
+                <TableRow>
+                  <TableCell>Hours</TableCell>
+                  {this.state.details.hours <= ORG.DEFAULT_HOURS && (
+                    <React.Fragment>
+                      <TableCell
+                        padding="dense"
+                        align="right"
+                        classes={{alignRight: classes.alignRight}}
+                        >
+                          <IndeterminateCheckBoxIcon className={classes.iconTransparent} />
+                      </TableCell>
+                      <TableCell
+                        padding="dense"
+                        align="left"
+                        classes={{alignLeft: classes.alignLeft }}
+                        >
+                          <div className={classes.cellDiv}>
+                            <Typography variant='subtitle2'>{this.state.details.hours}</Typography>
+                          </div>
+                      </TableCell>
+                    </React.Fragment>
+                  )}
+                  {this.state.details.hours == ORG.DEFAULT_HOURS + 1 && (
+                    <React.Fragment>
+                      <TableCell
+                        padding="dense"
+                        align="right"
+                        classes={{alignRight: classes.alignRight}}
+                        >
+                          <PlusOneIcon className={classes.icon} />
+                      </TableCell>
+                      <TableCell
+                        padding="dense"
+                        align="left"
+                        classes={{alignLeft: classes.alignLeft }}
+                        >
+                          <div className={classes.cellDiv}>
+                            <Typography variant='subtitle2'>{this.state.details.hours}</Typography>
+                          </div>
+                      </TableCell>
+                    </React.Fragment>
+                  )}
+                  {this.state.details.hours == ORG.DEFAULT_HOURS + 2 && (
+                    <React.Fragment>
+                      <TableCell
+                        padding="dense"
+                        align="right"
+                        classes={{alignRight: classes.alignRight}}
+                        >
+                          <ExposurePlus2Icon className={classes.icon} />
+                      </TableCell>
+                      <TableCell
+                        padding="dense"
+                        align="left"
+                        classes={{alignLeft: classes.alignLeft }}
+                        >
+                          <div className={classes.cellDiv}>
+                            <Typography variant='subtitle2'>{this.state.details.hours}</Typography>
+                          </div>
+                      </TableCell>
+                    </React.Fragment>
+                  )}
                 </TableRow>
               </TableBody>
             </Table>
@@ -212,16 +432,50 @@ class CheckInDialog extends React.Component {
           variant="dots"
           backButton={
             <div style={{flexBasis: "40%", justifyContent: 'flex-start'}}>
-              {this.state.viewsShown.length > 0 && (<Button size="small" onClick={this.handleBack} >
-                <KeyboardArrowLeft />
-                Back
-              </Button>)}
+              {this.state.viewsShown.length > 0 && (
+                <Button size="small" onClick={this.handleBack} >
+                  <KeyboardArrowLeft />
+                  Back
+                </Button>)}
             </div>
           }
           nextButton={
             <div style={{display: 'flex', justifyContent: 'flex-end', flexBasis: "40%"}}>
-              <Button>No</Button>
-              <Button color="primary" onClick={this.popView}>Yes</Button>
+              {!isLastSlide && (
+                <React.Fragment>
+                  <NextButton handleNext={this.handleNext} buttonVal={false}>No</NextButton>
+                  <NextButton
+                    handleNext={this.handleNext}
+                    buttonVal={true}
+                    buttonColor="primary"
+                    isLastSlide={isLastSlide}
+                    >
+                    Yes
+                  </NextButton>
+                </React.Fragment>
+              )}
+              {isLastSlide && (
+                <React.Fragment>
+                  <NextButton
+                    cancel={this.close}
+                    buttonVal={false}
+                    buttonVariant="outlined"
+                    isLastSlide={true}
+                    >
+                    Cancel
+                  </NextButton>
+                  <NextButton
+                    handleConfirm={this.handleConfirm}
+                    buttonVal={true}
+                    isLastSlide={isLastSlide}
+                    buttonVariant="contained"
+                    buttonColor="primary"
+                    myClassName={classes.nextButton}
+                    >
+                    Confirm
+                  </NextButton>
+                </React.Fragment>
+              )}
             </div>
           }
         />

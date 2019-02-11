@@ -16,3 +16,9 @@ export const TIME = {
   MINS_IN_HOUR: 60,
   MILLISECS_IN_HOUR: 1000 * 60 * 60,
 }
+
+export const ORG = {
+  REGISTRATION_FEE: 40,
+  DEFAULT_HOURS: 4,
+  DRIVER_HOURS: 5,
+}
