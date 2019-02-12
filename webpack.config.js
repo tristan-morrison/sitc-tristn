@@ -18,7 +18,7 @@ module.exports = {
     extensions: ['*', '.js', '.jsx']
   },
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, './dist/client/'),
     publicPath: '/',
     filename: 'bundle.js'
   },
@@ -31,7 +31,7 @@ module.exports = {
     contentBase: '.',
     port: 3030,
     hot: true,
-    publicPath: '/',
+    publicPath: '/dist/client',
     historyApiFallback: true,
   }
 }
