@@ -4,7 +4,7 @@
   "description": "An attendance-tracking app for Summer in the City",
   "main": "index.js",
   "scripts": {
-    "start:dev": "babel-watch src/server/index.js",
+    "start:dev": "DEBUG=index babel-watch src/server/index.js",
     "start:dev-client": "webpack-dev-server --config ./webpack.config.js --mode development --open --host 0.0.0.0",
     "build:client": "webpack",
     "build:server": "./node_modules/.bin/babel src/server --out-dir dist/server",
@@ -47,14 +47,20 @@
     "dotenv": "^6.2.0",
     "dotenv-webpack": "^1.7.0",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "fuse.js": "^3.3.0",
     "googleapis": "^37.2.0",
     "loglevel": "^1.6.1",
+    "passport": "^0.4.0",
+    "passport-google-oauth": "^1.0.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-router-dom": "^4.3.1",
     "react-swipeable-views": "^0.13.1",
-    "react-transition-group": "^2.5.3"
+    "react-transition-group": "^2.5.3",
+    "session-file-store": "^1.2.0",
+    "uuid": "^3.3.2",
+    "winston": "^3.2.1"
   },
   "ava": {
     "require": [

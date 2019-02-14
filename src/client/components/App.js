@@ -10,7 +10,6 @@ import TristnAppBar from './TristnAppBar';
 import MainView from './MainView'
 import SiteSelect from './SiteSelect';
 import sitcAirtable from './../api/sitcAirtable';
-import Auth from './../api/Auth';
 
 const styles = theme => ({
   root: {
@@ -27,7 +26,6 @@ class App extends React.Component {
       filteredVolunteerIds: [],
       checkedInTeers: [],
       notCheckedInTeers: [],
-      auth: new Auth(),
       carpoolSites: {},
       defaultCarpoolSiteId: '',
       headsUpTeers: {},
@@ -42,17 +40,6 @@ class App extends React.Component {
   }
 
   componentDidMount () {
-
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      const renewSessionPromise = this.props.auth.renewSession();
-      renewSessionPromise.then(() => {
-        if (!this.props.auth.isAuthenticated()) {
-          this.props.auth.login();
-        }
-      })
-    } else {
-      this.props.auth.login();
-    }
 
     const carpoolSitesPromise = sitcAirtable.getCarpoolSites();
     carpoolSitesPromise.then(siteInfo => {
@@ -104,7 +91,6 @@ class App extends React.Component {
             volunteerInfo={this.state.volunteerInfo}
           />
           <MainView
-            auth = {this.props.auth}
             updateVolunteerInfo={this.updateVolunteerInfo}
             updateCheckedInTeers={this.updateCheckedInTeers}
             updateNotCheckedInTeers={this.updateNotCheckedInTeers}

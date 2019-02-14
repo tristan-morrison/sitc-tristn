@@ -9,8 +9,6 @@ import Button from '@material-ui/core/Button';
 import green from '@material-ui/core/colors/green';
 import deepOrange from '@material-ui/core/colors/deepOrange';
 
-import Auth from './api/Auth.js';
-// import GoogleOAuth from './api/GoogleOAuth';
 import App from './components/App';
 import SiteSelect from './components/SiteSelect';
 
@@ -27,21 +25,16 @@ const theme = createMuiTheme({
 });
 
 function Root() {
-  const myAuth = new Auth();
-
   return (
     <BrowserRouter>
       <Switch>
         <Route path='/siteSelect' render={routeProps => (
-          <SiteSelect
-            auth={myAuth}
-          />
+          <SiteSelect/>
         )} />
         <Route path="/" render={routeProps => (
           <MuiThemeProvider theme={theme}>
             <App
               {...routeProps}
-              auth={myAuth}
             />
           </MuiThemeProvider>
         )} />

@@ -72,8 +72,6 @@ class SiteSelect extends React.Component {
   }
 
   componentDidMount () {
-    this.props.auth.handleAuthentication();
-
     const carpoolSitesPromise = sitcAirtable.getCarpoolSites();
     carpoolSitesPromise.then(carpoolSites => this.setState({carpoolSites: carpoolSites, open: true}));
   }
