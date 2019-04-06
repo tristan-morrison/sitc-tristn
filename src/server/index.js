@@ -39,7 +39,7 @@ passport.use(new GoogleStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     logger.info("profile.id: " + util.inspect(profile));
-    return done(null, {username: 'tristan@summerinthecity.com', password: 'fa;ldkfj', id: profile.id}, {message: 'Invalid credentials\n'});
+    return done(null, { username: 'tristan@summerinthecity.com', password: 'Tko-14-aaR', id: profile.id }); //, {message: 'Invalid credentials\n'}
     // User.findOrCreate({ googleId: profile.id }, function (err, user) {
     //   return done(err, user);
     // });
@@ -66,13 +66,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/auth', passport.authenticate('google', {scope: ['openid']}));
+app.get('/auth', passport.authenticate('google', {
+  scope: ['openid', 'https://www.googleapis.com/auth/userinfo.email']}));
 
 app.get('/authFail', (req, res) => {
   res.send("Authentication failed.");
 })
 
-app.get('/siteSelect', passport.authenticate('google', { scope: ['openid'], successReturnToOrRedirect: '/siteSelect', failureRedirect: '/authFail' }), function (req, res) {
+app.get('/siteSelect', passport.authenticate('google', { scope: ['openid', 'https://www.googleapis.com/auth/userinfo.email'], failureRedirect: '/authFail' }), function (req, res) {
+  logger.info(util.inspect(req));
   res.redirect('/');
 })
 
