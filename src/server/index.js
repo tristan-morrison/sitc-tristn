@@ -39,7 +39,7 @@ passport.use(new GoogleStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
     logger.info("profile.id: " + util.inspect(profile));
-    return done(null, {username: 'test@test.com', password: 'fa;ldkfj', id: profile.id}, {message: 'Invalid credentials\n'});
+    return done(null, {username: 'tristan@summerinthecity.com', password: 'fa;ldkfj', id: profile.id}, {message: 'Invalid credentials\n'});
     // User.findOrCreate({ googleId: profile.id }, function (err, user) {
     //   return done(err, user);
     // });
@@ -72,7 +72,7 @@ app.get('/authFail', (req, res) => {
   res.send("Authentication failed.");
 })
 
-app.get('/siteSelect', passport.authenticate('google', { scope: ['openid'], failureRedirect: '/authFail' }), function (req, res) {
+app.get('/siteSelect', passport.authenticate('google', { scope: ['openid'], successReturnToOrRedirect: '/siteSelect', failureRedirect: '/authFail' }), function (req, res) {
   res.redirect('/');
 })
 

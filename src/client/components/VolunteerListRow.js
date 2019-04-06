@@ -75,6 +75,8 @@ class VolunteerListRow extends React.Component {
       avatar = content;
     }
 
+    const carpoolSiteName = (this.props.primaryCarpoolSite) ? " | " + this.props.carpoolSites[this.props.primaryCarpoolSite]['Shortname'] : '';
+
     return (
       <Slide in={show} onExited={this.exited} direction="left" timeout={{enter: 0, exit: 300}}>
         <ListItem key = {this.props.personId}>
@@ -83,7 +85,7 @@ class VolunteerListRow extends React.Component {
           </ListItemIcon>
           <ListItemText
             primary = {this.props.firstName + ' ' + this.props.lastName}
-            secondary = {this.props.hours + ' Hours' + " | " + this.props.carpoolSites[this.props.primaryCarpoolSite]['Shortname']}>
+            secondary = {this.props.hours + carpoolSiteName}>
           </ListItemText>
           <ListItemSecondaryAction>
             <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>
