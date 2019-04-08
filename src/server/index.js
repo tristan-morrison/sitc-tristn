@@ -32,7 +32,7 @@ const app = express();
 const GoogleStrategy = googleOAuth.OAuth2Strategy;
 const FileStore = sessionFileStore(session);
 
-app.use(express.static(path.join(__dirname, './../../')));
+// app.use(express.static(path.join(__dirname, './../../')));
 
 passport.use(new GoogleStrategy({
     clientID: OAUTH.CLIENT_ID,
@@ -77,16 +77,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/auth', passport.authenticate('google', {
-  scope: ['openid']}));
-
-app.get('/authFail', (req, res) => {
-  res.send("Authentication failed.");
-})
-
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     // req.user is available for use here
+    logger.info(util.inspect(req))
     return next();
   }
 
@@ -94,20 +88,27 @@ function ensureAuthenticated(req, res, next) {
   res.redirect("/auth");
 }
 
+app.get('/auth', passport.authenticate('google', {
+  scope: ['openid']}));
+
+app.get('/authFail', (req, res) => {
+  res.send("Authentication failed.");
+})
+
 app.get('/siteSelect', passport.authenticate('google', { scope: ['openid'], failureRedirect: '/authFail' }), function (req, res) {
   logger.info(util.inspect(req.session));
-  res.redirect("/");
+  // res.redirect("/");
+  res.sendFile(path.join(__dirname, '../../index.html'));
 })
 
 app.get('/aProtectedRoute', ensureAuthenticated, (req, res) => {
   res.send("YOU ARE AUTHENTICATED. CONGRATS.")
 })
 
-app.get('*', (req, res) => {
-  logger.info(util.inspect(req.session));
-  logger.info(req.session.name);
-  req.session.name = "Flavio";
-  res.sendFile(path.join(__dirname, '../../index.html'));
+app.get('*', ensureAuthenticated, (req, res) => {
+  logger.info("caught the home case!");
+  res.send("HOME CASE CAUGHT");
+  // res.sendFile(path.join(__dirname, '../../index.html'));
 })
 
 app.listen(3030, () => {
