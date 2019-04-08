@@ -32,7 +32,7 @@ const app = express();
 const GoogleStrategy = googleOAuth.OAuth2Strategy;
 const FileStore = sessionFileStore(session);
 
-// app.use(express.static(path.join(__dirname, './../../')));
+app.use(express.static(path.join(__dirname, './../../')));
 
 passport.use(new GoogleStrategy({
     clientID: OAUTH.CLIENT_ID,
