@@ -22,6 +22,23 @@ function checkIn (personId, hours) {
         reject(err);
       } else {
         loglevel.info(record.getId());
+        resolve(deletedRecord);
+      }
+    })
+  });
+
+  return myPromise;
+}
+
+function checkOut (personId) {
+  const myPromise = new Promise((resolve, reject) => {
+    const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
+
+    base(AIRTABLE.ATTENDANCE_TABLE).destroy(personId, (err, deletedRecord) => {
+      if (err) {
+        loglevel.info('Failed to delete record ' + deletedRecord);
+        reject();
+      } else {
         resolve();
       }
     })
@@ -135,6 +152,7 @@ function getHeadsUp () {
 
 export default {
   checkIn,
+  checkOut,
   getAttendanceRecordsToday,
   getCarpoolSites,
   getHeadsUp,

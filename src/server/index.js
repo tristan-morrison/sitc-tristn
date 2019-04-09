@@ -55,7 +55,7 @@ passport.deserializeUser((id, done) => {
 })
 
 const cookieExpirationDate = new Date();
-const cookieExpirationDays = 365;
+const cookieExpirationDays = 3;
 cookieExpirationDate.setDate(cookieExpirationDate.getDate() + cookieExpirationDays);
 
 app.use(cookieParser(process.env.SESSION_SECRET));

@@ -26,6 +26,9 @@ class CheckedInList extends React.Component {
 
   checkOut (personId) {
     loglevel.info('checking out ' + personId);
+    sitcAirtable.checkOut(personId).then(deletedRecord => {
+      loglevel.info("Deleted record " + deletedRecord);
+    })
   }
 
   render () {
