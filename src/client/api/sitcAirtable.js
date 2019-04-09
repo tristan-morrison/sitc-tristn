@@ -22,7 +22,7 @@ function checkIn (personId, hours) {
         reject(err);
       } else {
         loglevel.info(record.getId());
-        resolve(deletedRecord);
+        resolve(record.getId());
       }
     })
   });
@@ -30,16 +30,16 @@ function checkIn (personId, hours) {
   return myPromise;
 }
 
-function checkOut (personId) {
+function checkOut (attendanceRecordId) {
   const myPromise = new Promise((resolve, reject) => {
     const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
 
-    base(AIRTABLE.ATTENDANCE_TABLE).destroy(personId, (err, deletedRecord) => {
+    base(AIRTABLE.ATTENDANCE_TABLE).destroy(attendanceRecordId, (err, deletedRecord) => {
       if (err) {
         loglevel.info('Failed to delete record ' + deletedRecord);
         reject();
       } else {
-        resolve();
+        resolve(deletedRecord);
       }
     })
   });
@@ -68,7 +68,7 @@ function getAttendanceRecordsToday () {
       filterByFormula: `DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}'`,
       timeZone: AIRTABLE.TIME_ZONE,
     }).eachPage(function page(records, fetchNextPage) {
-      records.forEach(record => checkedInTeers.push(record.get('Volunteer ID')[0]));
+      records.forEach(record => checkedInTeers[record.get("Record ID")] = record.get("Volunteer ID")[0]);
       fetchNextPage();
     }, function done(err) {
       if (err) {

@@ -24,28 +24,27 @@ class CheckedInList extends React.Component {
     this.props.setTabIndex(1);
   }
 
-  checkOut (personId) {
-    loglevel.info('checking out ' + personId);
-    sitcAirtable.checkOut(personId).then(deletedRecord => {
-      loglevel.info("Deleted record " + deletedRecord);
-    })
+  checkOut (attendanceRecordId, personId) {
+    this.props.checkOutHandler(attendanceRecordId, personId)
   }
 
   render () {
     const teerListItems = [];
-    this.props.listToRender.forEach(personID => {
+    for (const attendanceRecordId in this.props.checkedInTeers) {
+      const personId = this.props.checkedInTeers[attendanceRecordId];
       teerListItems.push(
         <CheckedInListRow
-          personId = {personID}
-          firstName = {this.props.volunteerInfo[personID]['First Name']}
-          lastName = {this.props.volunteerInfo[personID]['Last Name']}
-          paid = {this.props.volunteerInfo[personID]['Paid']}
-          hours = {this.props.volunteerInfo[personID]['Hours Credited']}
-          hasCar = {this.props.volunteerInfo[personID]['Has Car']}
+          personId = {personId}
+          attendanceRecordId = {attendanceRecordId}
+          firstName = {this.props.volunteerInfo[personId]['First Name']}
+          lastName = {this.props.volunteerInfo[personId]['Last Name']}
+          paid = {this.props.volunteerInfo[personId]['Paid']}
+          hours = {this.props.volunteerInfo[personId]['Hours Credited']}
+          hasCar = {this.props.volunteerInfo[personId]['Has Car']}
           checkOut = {this.checkOut}
         />
       );
-    });
+    }
 
     return (
       <List>

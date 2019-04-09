@@ -28,6 +28,7 @@ class MainView extends React.Component {
     }
 
     this.checkInHandler = this.checkInHandler.bind(this);
+    this.checkOutHandler = this.checkOutHandler.bind(this);
     this.handleTabChange = this.handleTabChange.bind(this);
     this.handleChangeIndex = this.handleChangeIndex.bind(this);
     this.setTabIndex = this.setTabIndex.bind(this);
@@ -58,7 +59,7 @@ class MainView extends React.Component {
           records.forEach(function (record) {
             const personId = record.fields['PersonID'];
             volunteers[personId] = record.fields;
-            if (!self.props.checkedInTeers.includes(personId)) {
+            if (!Object.values(self.props.checkedInTeers).includes(personId)) {
               self.props.notCheckedIn.push(personId);
             }
             if (Object.keys(self.props.headsUpTeers).includes(personId)) {
@@ -81,9 +82,11 @@ class MainView extends React.Component {
   }
 
   checkInHandler (personId, hours) {
-    sitcAirtable.checkIn(personId, hours).then(code => {
+    sitcAirtable.checkIn(personId, hours).then(attendanceRecordId => {
       loglevel.info("Checked in!");
-      this.props.updateCheckedInTeers(this.props.checkedInTeers.concat([personId]))
+      const updatedCheckedInTeers = {...this.props.checkedInTeers};
+      updatedCheckedInTeers[attendanceRecordId] = personId
+      this.props.updateCheckedInTeers(updatedCheckedInTeers);
       loglevel.info(this.props.checkedInTeers);
 
       // have to slice because we need to assign a copy of the original, not a reference to it
@@ -91,6 +94,21 @@ class MainView extends React.Component {
       updatedNotCheckedIn.splice(updatedNotCheckedIn.indexOf(personId), 1);
       this.props.updateNotCheckedInTeers(updatedNotCheckedIn);
     }, err => loglevel.error("Error with the server call!"));
+  }
+
+  checkOutHandler (attendanceRecordId, personId) {
+    loglevel.info('checking out ' + attendanceRecordId);
+    sitcAirtable.checkOut(attendanceRecordId).then(deletedRecord => {
+      loglevel.info("Deleted record " + deletedRecord);
+
+      // Remove teer from checkedInTeers
+      let updatedCheckedInTeers = { ...this.props.checkedInTeers };
+      delete updatedCheckedInTeers[attendanceRecordId];
+      this.props.updateCheckedInTeers(updatedCheckedInTeers)
+
+      // Emplace teer in notCheckedInTeers
+      this.props.updateNotCheckedInTeers(this.props.notCheckedIn.concat([personId]));
+    })
   }
 
   handleTabChange (event, value) {
@@ -148,8 +166,9 @@ class MainView extends React.Component {
           <Route path="/checkedIn" render={routeProps => (
             <CheckedInList
               {...routeProps}
+              checkOutHandler={this.checkOutHandler}
               volunteerInfo={this.props.volunteerInfo}
-              listToRender={this.props.checkedInTeers}
+              checkedInTeers={this.props.checkedInTeers}
               setTabIndex={this.setTabIndex}
             />
           )}/>

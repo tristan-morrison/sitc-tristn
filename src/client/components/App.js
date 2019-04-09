@@ -24,7 +24,7 @@ class App extends React.Component {
     this.state = {
       volunteerInfo: {},
       filteredVolunteerIds: [],
-      checkedInTeers: [],
+      checkedInTeers: {},
       notCheckedInTeers: [],
       carpoolSites: {},
       defaultCarpoolSiteId: '',

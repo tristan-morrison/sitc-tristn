@@ -38,7 +38,7 @@ class VolunteerList extends React.Component {
     this.setState({ hide: hideArr.concat(personId)});
 
 
-    if (this.props.checkedInTeers.includes(personId)) {
+    if (Object.values(this.props.checkedInTeers).includes(personId)) {
       loglevel.error("This person is already checked in!!");
       return -1;
     }

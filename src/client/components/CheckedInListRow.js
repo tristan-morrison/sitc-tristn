@@ -57,7 +57,7 @@ class CheckedInListRow extends React.Component {
 
   handleCheckOutClick() {
     this.setState({show: false});
-    this.props.checkOut(this.props.personId);
+    this.props.checkOut(this.props.attendanceRecordId, this.props.personId);
   }
 
   render () {
