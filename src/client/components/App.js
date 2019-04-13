@@ -29,6 +29,7 @@ class App extends React.Component {
       carpoolSites: {},
       defaultCarpoolSiteId: '',
       headsUpTeers: {},
+      activeTab: {}
     }
 
     this.updateVolunteerInfo = this.updateVolunteerInfo.bind(this);
@@ -78,6 +79,10 @@ class App extends React.Component {
   setFilter (filteredTeers) {
     loglevel.debug(filteredTeers);
     this.setState({filteredVolunteerIds: filteredTeers});
+  }
+
+  setActiveTab (tabIndex) {
+    this.setState({activeTab: tabIndex});
   }
 
   render () {
