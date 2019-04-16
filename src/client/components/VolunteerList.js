@@ -69,7 +69,10 @@ class VolunteerList extends React.Component {
     const { classes } = this.props;
     const hide = this.state.hide;
     const teerListItems = [];
-    this.props.listToRender.forEach((personID) => {
+
+    const listToRender = (this.props.filteredTeers.length > 0) ? this.props.filteredTeers : this.props.notCheckedIn
+
+    listToRender.forEach((personID) => {
       teerListItems.push(
         <VolunteerListRow
           personId = {personID}

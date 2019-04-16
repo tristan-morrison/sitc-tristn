@@ -112,7 +112,8 @@ class MainView extends React.Component {
   }
 
   handleTabChange (event, value) {
-    this.setState({tabVal: value});
+    this.props.clearFilter();
+    this.props.setActiveTab(value);
     switch (value) {
       case 0:
         this.props.history.push('/');
@@ -131,7 +132,6 @@ class MainView extends React.Component {
   }
 
   render () {
-    const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : this.props.notCheckedIn;
 
     if (this.state.loadingTeerData) {
       return null;
@@ -140,7 +140,7 @@ class MainView extends React.Component {
     return (
       <React.Fragment>
         <Tabs
-          value={this.state.tabVal}
+          value={this.props.activeTab}
           onChange={this.handleTabChange}
           variant="fullWidth"
         >
@@ -158,9 +158,10 @@ class MainView extends React.Component {
               checkInHandler={this.checkInHandler}
               volunteerInfo={this.props.volunteerInfo}
               checkedInTeers={this.props.checkedInTeers}
-              listToRender={listToRender}
+              notCheckedIn={this.props.notCheckedIn}
               headsUpTeers={this.props.headsUpTeers}
               carpoolSites={this.props.carpoolSites}
+              filteredTeers={this.props.filteredTeers}
             />
           )} />
           <Route path="/checkedIn" render={routeProps => (
@@ -170,6 +171,7 @@ class MainView extends React.Component {
               volunteerInfo={this.props.volunteerInfo}
               checkedInTeers={this.props.checkedInTeers}
               setTabIndex={this.setTabIndex}
+              filteredTeers={this.props.filteredTeers}
             />
           )}/>
         </Switch>
