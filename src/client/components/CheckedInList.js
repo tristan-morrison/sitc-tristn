@@ -16,6 +16,10 @@ class CheckedInList extends React.Component {
   constructor () {
     super();
 
+    this.state = {
+      hide: []
+    }
+
     this.checkOut = this.checkOut.bind(this);
   }
 
@@ -25,7 +29,9 @@ class CheckedInList extends React.Component {
   }
 
   checkOut (attendanceRecordId, personId) {
-    this.props.checkOutHandler(attendanceRecordId, personId)
+    const hideArr = this.state.hide.slice();
+    this.setState({ hide: hideArr.concat(personId) });
+    this.props.checkOutHandler(attendanceRecordId, personId);
   }
 
   render () {
@@ -43,6 +49,7 @@ class CheckedInList extends React.Component {
           hours = {this.props.volunteerInfo[personId]['Hours Credited']}
           hasCar = {this.props.volunteerInfo[personId]['Has Car']}
           checkOut = {this.checkOut}
+          hide={this.state.hide.includes(personId)}
         />
       );
     });

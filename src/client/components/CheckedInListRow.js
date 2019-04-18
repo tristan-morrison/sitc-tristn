@@ -14,7 +14,7 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import DriveEtaIcon from '@material-ui/icons/DriveEta';
 import AirlineSeatReclineNormalIcon from '@material-ui/icons/AirlineSeatReclineNormal';
 import CloseIcon from '@material-ui/icons/Close';
-import Collapse from '@material-ui/core/Collapse';
+import Slide from '@material-ui/core/Slide';
 
 class CheckedInListRow extends React.Component {
 
@@ -62,10 +62,10 @@ class CheckedInListRow extends React.Component {
 
   render () {
     const avatar = this.state.avatar;
-    const show = this.state.show;
+    const show = !this.props.hide;
 
     return (
-      <Collapse in={show} unmountOnExit>
+      <Slide in={show} direction="right" timeout={{enter: 0, exit: 300}}>
         <ListItem key = {this.props.personId}>
           <ListItemIcon>
             {avatar}
@@ -80,7 +80,7 @@ class CheckedInListRow extends React.Component {
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
-      </Collapse>
+      </Slide>
     );
   }
 
