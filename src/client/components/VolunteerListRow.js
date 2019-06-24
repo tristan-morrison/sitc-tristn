@@ -1,4 +1,4 @@
-import React from 'React';
+import React from 'react';
 import * as loglevel from 'loglevel';
 // import { Transition } from 'react-transition-group';
 

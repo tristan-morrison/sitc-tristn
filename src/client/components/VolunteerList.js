@@ -1,4 +1,4 @@
-import React from 'React';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import Airtable from 'airtable';
 import * as loglevel from 'loglevel';
