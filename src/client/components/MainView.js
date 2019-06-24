@@ -1,4 +1,4 @@
-import React from 'React';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
