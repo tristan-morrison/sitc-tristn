@@ -35,7 +35,7 @@ const FileStore = sessionFileStore(session);
 passport.use(new GoogleStrategy({
     clientID: OAUTH.CLIENT_ID,
     clientSecret: process.env.GOOGLE_OAUTH_SECRET,
-    callbackURL: "http://localhost:3030/auth/success"
+    callbackURL: process.env.DOMAIN,
   },
   function(accessToken, refreshToken, profile, done) {
     logger.info("profile.id: " + util.inspect(profile));
