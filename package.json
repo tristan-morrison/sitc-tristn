@@ -38,7 +38,8 @@
     "react-hot-loader": "^4.6.3",
     "webpack": "^4.28.4",
     "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^3.1.14",
+    "winston": "^3.2.1"
   },
   "dependencies": {
     "@material-ui/core": "^3.9.0",

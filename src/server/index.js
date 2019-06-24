@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, './../../')));
 passport.use(new GoogleStrategy({
     clientID: OAUTH.CLIENT_ID,
     clientSecret: process.env.GOOGLE_OAUTH_SECRET,
-    callbackURL: "http://localhost:3030/siteSelect"
+    callbackURL: "http://tristn.summerinthecity.com:3030/siteSelect"
   },
   function(accessToken, refreshToken, profile, done) {
     logger.info("profile.id: " + util.inspect(profile));
