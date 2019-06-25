@@ -98,7 +98,6 @@ class TristnAppBar extends React.Component {
     super();
 
     this.state = {
-      searchText: '',
       searchIsFocused: false,
     }
 
@@ -111,7 +110,7 @@ class TristnAppBar extends React.Component {
   updateSearchTextAndFilter (event) {
     loglevel.debug(event.target.value);
     const updatedText = event.target.value;
-    this.setState({searchText: updatedText});
+    this.props.setSearchText(updatedText);
 
     var options = {
       keys: [
@@ -127,8 +126,9 @@ class TristnAppBar extends React.Component {
       minMatchCharLength: 3,
       shouldSort: true,
     };
-    var fuse = new Fuse(Object.keys(this.props.volunteerInfo).map(id => this.props.volunteerInfo[id]), options); // "list" is the item array
-    var result = fuse.search(updatedText);
+    const searchSpace = (this.props.activeTab == 0) ? this.props.notCheckedInTeers : Object.values(this.props.checkedInTeers);
+    const fuse = new Fuse(searchSpace.map(id => this.props.volunteerInfo[id]), options); // "list" is the item array
+    const result = fuse.search(updatedText);
     this.props.setFilter(result)
   }
 
@@ -141,8 +141,8 @@ class TristnAppBar extends React.Component {
   }
 
   clearSearchText (event) {
-    this.setState({searchText: ''});
-    this.setFilter({});
+    this.props.setSearchText('');
+    this.props.setFilter({});
   }
 
 
@@ -158,9 +158,9 @@ class TristnAppBar extends React.Component {
       }
     }
     else {
-      if (this.state.searchText.length > 0) {
+      if (this.props.searchText.length > 0) {
         searchContainerStyle = {
-          width: (this.state.searchText.length * 8) + 50 + 20
+          width: (this.props.searchText.length * 8) + 50 + 20
         }
       } else {
         searchInputStyle = {
@@ -170,7 +170,7 @@ class TristnAppBar extends React.Component {
     }
 
     let clearContainer = '';
-    if (this.state.searchText.length > 0) {
+    if (this.props.searchText.length > 0) {
       clearContainer = (
           <div className={classes.clearIcon}>
             <IconButton color="inherit" onClick={this.clearSearchText}>
@@ -198,7 +198,7 @@ class TristnAppBar extends React.Component {
             </div>
             <Input
               disableUnderline = "true"
-              value = {this.state.searchText}
+              value = {this.props.searchText}
               onChange = {this.updateSearchTextAndFilter}
               onFocus = {this.onSearchFocused}
               onBlur = {this.onSearchBlur}

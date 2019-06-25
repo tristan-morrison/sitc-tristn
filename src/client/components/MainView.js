@@ -28,6 +28,7 @@ class MainView extends React.Component {
     }
 
     this.checkInHandler = this.checkInHandler.bind(this);
+    this.checkOutHandler = this.checkOutHandler.bind(this);
     this.handleTabChange = this.handleTabChange.bind(this);
     this.handleChangeIndex = this.handleChangeIndex.bind(this);
     this.setTabIndex = this.setTabIndex.bind(this);
@@ -58,13 +59,13 @@ class MainView extends React.Component {
           records.forEach(function (record) {
             const personId = record.fields['PersonID'];
             volunteers[personId] = record.fields;
-            if (!self.props.checkedInTeers.includes(personId)) {
+            if (!Object.values(self.props.checkedInTeers).includes(personId)) {
               self.props.notCheckedIn.push(personId);
             }
-            if (Object.keys(self.props.headsUpTeers).includes(personId)) {
-              volunteers[personId]['isHeadsUp'] = true;
-              volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
-            }
+            // if (Object.keys(self.props.headsUpTeers).includes(personId)) {
+            //   volunteers[personId]['isHeadsUp'] = true;
+            //   volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
+            // }
           });
 
           fetchNextPage();
@@ -81,9 +82,11 @@ class MainView extends React.Component {
   }
 
   checkInHandler (personId, hours) {
-    sitcAirtable.checkIn(personId, hours).then(code => {
+    sitcAirtable.checkIn(personId, hours).then(attendanceRecordId => {
       loglevel.info("Checked in!");
-      this.props.updateCheckedInTeers(this.props.checkedInTeers.concat([personId]))
+      const updatedCheckedInTeers = {...this.props.checkedInTeers};
+      updatedCheckedInTeers[attendanceRecordId] = personId
+      this.props.updateCheckedInTeers(updatedCheckedInTeers);
       loglevel.info(this.props.checkedInTeers);
 
       // have to slice because we need to assign a copy of the original, not a reference to it
@@ -93,8 +96,24 @@ class MainView extends React.Component {
     }, err => loglevel.error("Error with the server call!"));
   }
 
+  checkOutHandler (attendanceRecordId, personId) {
+    loglevel.info('checking out ' + attendanceRecordId);
+    sitcAirtable.checkOut(attendanceRecordId).then(deletedRecord => {
+      loglevel.info("Deleted record " + deletedRecord);
+
+      // Remove teer from checkedInTeers
+      let updatedCheckedInTeers = { ...this.props.checkedInTeers };
+      delete updatedCheckedInTeers[attendanceRecordId];
+      this.props.updateCheckedInTeers(updatedCheckedInTeers)
+
+      // Emplace teer in notCheckedInTeers
+      this.props.updateNotCheckedInTeers(this.props.notCheckedIn.concat([personId]));
+    })
+  }
+
   handleTabChange (event, value) {
-    this.setState({tabVal: value});
+    this.props.clearFilter();
+    this.props.setActiveTab(value);
     switch (value) {
       case 0:
         this.props.history.push('/');
@@ -113,7 +132,6 @@ class MainView extends React.Component {
   }
 
   render () {
-    const listToRender = (this.props.filteredVolunteerIds.length > 0) ? this.props.filteredVolunteerIds : this.props.notCheckedIn;
 
     if (this.state.loadingTeerData) {
       return null;
@@ -122,7 +140,7 @@ class MainView extends React.Component {
     return (
       <React.Fragment>
         <Tabs
-          value={this.state.tabVal}
+          value={this.props.activeTab}
           onChange={this.handleTabChange}
           variant="fullWidth"
         >
@@ -140,17 +158,20 @@ class MainView extends React.Component {
               checkInHandler={this.checkInHandler}
               volunteerInfo={this.props.volunteerInfo}
               checkedInTeers={this.props.checkedInTeers}
-              listToRender={listToRender}
+              notCheckedIn={this.props.notCheckedIn}
               headsUpTeers={this.props.headsUpTeers}
               carpoolSites={this.props.carpoolSites}
+              filteredTeers={this.props.filteredTeers}
             />
           )} />
           <Route path="/checkedIn" render={routeProps => (
             <CheckedInList
               {...routeProps}
+              checkOutHandler={this.checkOutHandler}
               volunteerInfo={this.props.volunteerInfo}
-              listToRender={this.props.checkedInTeers}
+              checkedInTeers={this.props.checkedInTeers}
               setTabIndex={this.setTabIndex}
+              filteredTeers={this.props.filteredTeers}
             />
           )}/>
         </Switch>

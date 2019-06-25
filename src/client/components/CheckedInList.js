@@ -16,6 +16,10 @@ class CheckedInList extends React.Component {
   constructor () {
     super();
 
+    this.state = {
+      hide: []
+    }
+
     this.checkOut = this.checkOut.bind(this);
   }
 
@@ -24,22 +28,28 @@ class CheckedInList extends React.Component {
     this.props.setTabIndex(1);
   }
 
-  checkOut (personId) {
-    loglevel.info('checking out ' + personId);
+  checkOut (attendanceRecordId, personId) {
+    const hideArr = this.state.hide.slice();
+    this.setState({ hide: hideArr.concat(personId) });
+    this.props.checkOutHandler(attendanceRecordId, personId);
   }
 
   render () {
+    const listToRender = (this.props.filteredTeers.length > 0) ? this.props.filteredTeers : Object.values(this.props.checkedInTeers);
+
     const teerListItems = [];
-    this.props.listToRender.forEach(personID => {
+    listToRender.forEach(personId => {
       teerListItems.push(
         <CheckedInListRow
-          personId = {personID}
-          firstName = {this.props.volunteerInfo[personID]['First Name']}
-          lastName = {this.props.volunteerInfo[personID]['Last Name']}
-          paid = {this.props.volunteerInfo[personID]['Paid']}
-          hours = {this.props.volunteerInfo[personID]['Hours Credited']}
-          hasCar = {this.props.volunteerInfo[personID]['Has Car']}
+          personId = {personId}
+          attendanceRecordId = {Object.keys(this.props.checkedInTeers).find(attendanceRecordId => this.props.checkedInTeers[attendanceRecordId] === personId)}
+          firstName = {this.props.volunteerInfo[personId]['First Name']}
+          lastName = {this.props.volunteerInfo[personId]['Last Name']}
+          paid = {this.props.volunteerInfo[personId]['Paid']}
+          hours = {this.props.volunteerInfo[personId]['Hours Credited']}
+          hasCar = {this.props.volunteerInfo[personId]['Has Car']}
           checkOut = {this.checkOut}
+          hide={this.state.hide.includes(personId)}
         />
       );
     });

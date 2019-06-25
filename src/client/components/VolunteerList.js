@@ -38,7 +38,7 @@ class VolunteerList extends React.Component {
     this.setState({ hide: hideArr.concat(personId)});
 
 
-    if (this.props.checkedInTeers.includes(personId)) {
+    if (Object.values(this.props.checkedInTeers).includes(personId)) {
       loglevel.error("This person is already checked in!!");
       return -1;
     }
@@ -69,7 +69,10 @@ class VolunteerList extends React.Component {
     const { classes } = this.props;
     const hide = this.state.hide;
     const teerListItems = [];
-    this.props.listToRender.forEach((personID) => {
+
+    const listToRender = (this.props.filteredTeers.length > 0) ? this.props.filteredTeers : this.props.notCheckedIn
+
+    listToRender.forEach((personID) => {
       teerListItems.push(
         <VolunteerListRow
           personId = {personID}
