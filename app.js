@@ -98,7 +98,7 @@ app.get('/authFail', (req, res) => {
 app.get('/auth', passport.authenticate('google', { scope: ['openid'] }));
 
 app.get('/siteSelect', ensureAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, '../../index.html'));
+  res.sendFile(path.join(__dirname, './index.html'));
 })
 
 app.get('/aProtectedRoute', ensureAuthenticated, (req, res) => {
@@ -106,10 +106,10 @@ app.get('/aProtectedRoute', ensureAuthenticated, (req, res) => {
 })
 
 app.get('/', ensureAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, '../../index.html'));
+  res.sendFile(path.join(__dirname, './index.html'));
 })
 
-app.use(express.static(path.join(__dirname, './../../')));
+app.use(express.static(path.join(__dirname, './')));
 
 app.listen(3030, () => {
   console.log('Listening on localhost:3030')
