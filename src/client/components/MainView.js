@@ -53,7 +53,7 @@ class MainView extends React.Component {
       const volunteers = {};
 
       base(AIRTABLE.PROFILES_TABLE).select({
-        maxRecords: 100,
+        // maxRecords: 100,
         view: "Grid view"
       }).eachPage((records, fetchNextPage) => {
           records.forEach(function (record) {
