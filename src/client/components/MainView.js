@@ -62,10 +62,10 @@ class MainView extends React.Component {
             if (!Object.values(self.props.checkedInTeers).includes(personId)) {
               self.props.notCheckedIn.push(personId);
             }
-            if (Object.keys(self.props.headsUpTeers).includes(personId)) {
-              volunteers[personId]['isHeadsUp'] = true;
-              volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
-            }
+            // if (Object.keys(self.props.headsUpTeers).includes(personId)) {
+            //   volunteers[personId]['isHeadsUp'] = true;
+            //   volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
+            // }
           });
 
           fetchNextPage();
