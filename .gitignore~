@@ -64,5 +64,4 @@ sessions/
 .next
 .DS_Store
 dist/
-/app.js
-/constants.js
+/*.js

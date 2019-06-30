@@ -22,7 +22,7 @@ function checkIn (personId, hours) {
         reject(err);
       } else {
         loglevel.info(record.getId());
-        resolve(deletedRecord);
+        resolve(record.getId());
       }
     })
   });
@@ -30,16 +30,16 @@ function checkIn (personId, hours) {
   return myPromise;
 }
 
-function checkOut (personId) {
+function checkOut (attendanceRecordId) {
   const myPromise = new Promise((resolve, reject) => {
     const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
 
-    base(AIRTABLE.ATTENDANCE_TABLE).destroy(personId, (err, deletedRecord) => {
+    base(AIRTABLE.ATTENDANCE_TABLE).destroy(attendanceRecordId, (err, deletedRecord) => {
       if (err) {
         loglevel.info('Failed to delete record ' + deletedRecord);
         reject();
       } else {
-        resolve();
+        resolve(deletedRecord);
       }
     })
   });
@@ -68,7 +68,7 @@ function getAttendanceRecordsToday () {
       filterByFormula: `DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}'`,
       timeZone: AIRTABLE.TIME_ZONE,
     }).eachPage(function page(records, fetchNextPage) {
-      records.forEach(record => checkedInTeers.push(record.get('Volunteer ID')[0]));
+      records.forEach(record => checkedInTeers[record.get("Record ID")] = record.get("Volunteer ID")[0]);
       fetchNextPage();
     }, function done(err) {
       if (err) {
@@ -116,16 +116,22 @@ function getCarpoolSites () {
     return myPromise;
 }
 
-function getHeadsUp () {
+function getHeadsUp (forCarpoolSite) {
   const myPromise = new Promise ((resolve, reject) => {
     const headsUpTeers = {};
 
     const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
 
+    const nowInDetroit = myDatetime.getTimeInDetroit();
+    // thanks to user113716 on SO for the clever way to add leading zeros without any comparisons
+    // https://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date
+    const nowInDetroitStr = nowInDetroit.getFullYear() + "-" + ("0" + (nowInDetroit.getMonth() + 1)).slice(-2) + "-" + ("0" + nowInDetroit.getDate()).slice(-2);
+
     base(AIRTABLE.HEADS_UP_TABLE).select({
       // Selecting the first 3 records in Grid view:
       maxRecords: 50,
       view: AIRTABLE.HEADS_UP_VIEW,
+      filterByFormula: `DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}'`, // AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', {Carpool Site} = '${forCarpoolSite}')
     }).eachPage(function page(records, fetchNextPage) {
       // This function (`page`) will get called for each page of records.
 

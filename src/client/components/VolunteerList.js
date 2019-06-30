@@ -6,6 +6,7 @@ import {AIRTABLE} from './../constants';
 
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
 
 
 import VolunteerListRow from './VolunteerListRow';
@@ -38,7 +39,7 @@ class VolunteerList extends React.Component {
     this.setState({ hide: hideArr.concat(personId)});
 
 
-    if (this.props.checkedInTeers.includes(personId)) {
+    if (Object.values(this.props.checkedInTeers).includes(personId)) {
       loglevel.error("This person is already checked in!!");
       return -1;
     }
@@ -69,7 +70,10 @@ class VolunteerList extends React.Component {
     const { classes } = this.props;
     const hide = this.state.hide;
     const teerListItems = [];
-    this.props.listToRender.forEach((personID) => {
+
+    const listToRender = (this.props.filteredTeers.length > 0) ? this.props.filteredTeers : Object.keys(this.props.headsUpTeers);
+
+    listToRender.forEach((personID) => {
       teerListItems.push(
         <VolunteerListRow
           personId = {personID}
@@ -89,6 +93,10 @@ class VolunteerList extends React.Component {
 
     return (
       <React.Fragment>
+        {
+          (teerListItems.length < 1) && 
+            <Typography variant="h6">No HeadsUp volunteers today.</Typography>
+        }
         <List>
           {teerListItems}
         </List>
