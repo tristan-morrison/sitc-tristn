@@ -6,6 +6,7 @@ import {AIRTABLE} from './../constants';
 
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
 
 
 import VolunteerListRow from './VolunteerListRow';
@@ -70,7 +71,7 @@ class VolunteerList extends React.Component {
     const hide = this.state.hide;
     const teerListItems = [];
 
-    const listToRender = (this.props.filteredTeers.length > 0) ? this.props.filteredTeers : this.props.notCheckedIn
+    const listToRender = (this.props.filteredTeers.length > 0) ? this.props.filteredTeers : Object.keys(this.props.headsUpTeers);
 
     listToRender.forEach((personID) => {
       teerListItems.push(
@@ -92,6 +93,10 @@ class VolunteerList extends React.Component {
 
     return (
       <React.Fragment>
+        {
+          (teerListItems.length < 1) && 
+            <Typography variant="h6">No HeadsUp volunteers today.</Typography>
+        }
         <List>
           {teerListItems}
         </List>

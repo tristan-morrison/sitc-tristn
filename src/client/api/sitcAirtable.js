@@ -116,16 +116,22 @@ function getCarpoolSites () {
     return myPromise;
 }
 
-function getHeadsUp () {
+function getHeadsUp (forCarpoolSite) {
   const myPromise = new Promise ((resolve, reject) => {
     const headsUpTeers = {};
 
     const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
 
+    const nowInDetroit = myDatetime.getTimeInDetroit();
+    // thanks to user113716 on SO for the clever way to add leading zeros without any comparisons
+    // https://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date
+    const nowInDetroitStr = nowInDetroit.getFullYear() + "-" + ("0" + (nowInDetroit.getMonth() + 1)).slice(-2) + "-" + ("0" + nowInDetroit.getDate()).slice(-2);
+
     base(AIRTABLE.HEADS_UP_TABLE).select({
       // Selecting the first 3 records in Grid view:
       maxRecords: 50,
       view: AIRTABLE.HEADS_UP_VIEW,
+      filterByFormula: `DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}'`, // AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', {Carpool Site} = '${forCarpoolSite}')
     }).eachPage(function page(records, fetchNextPage) {
       // This function (`page`) will get called for each page of records.
 

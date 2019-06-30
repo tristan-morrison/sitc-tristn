@@ -37,13 +37,18 @@ class MainView extends React.Component {
   // gets volunteer info from the Profiles table
   componentDidMount () {
 
+    if (localStorage.getItem('defaultCarpoolSiteId')) {
+      this.props.setCarpoolSiteId(localStorage.getItem('defaultCarpoolSiteId'));
+    } else {
+      this.props.history.push("/siteSelect");
+    }
 
     let self = this;
 
     const attendancePromise = sitcAirtable.getAttendanceRecordsToday();
     const headsUpPromise = attendancePromise
       .then(info => this.props.updateCheckedInTeers(info))
-      .then(() => {return  sitcAirtable.getHeadsUp()})
+      .then(() => {return  sitcAirtable.getHeadsUp(this.props.carpoolSiteId)})
       .then(info => this.props.updateHeadsUpTeers(info));
 
     headsUpPromise.then(() => {
@@ -54,18 +59,21 @@ class MainView extends React.Component {
 
       base(AIRTABLE.PROFILES_TABLE).select({
         // maxRecords: 100,
-        view: "Grid view"
+        view: "DO NOT FILTER OR SORT",
       }).eachPage((records, fetchNextPage) => {
           records.forEach(function (record) {
             const personId = record.fields['PersonID'];
             volunteers[personId] = record.fields;
             if (!Object.values(self.props.checkedInTeers).includes(personId)) {
-              self.props.notCheckedIn.push(personId);
+                self.props.notCheckedIn.push(personId);
             }
-            // if (Object.keys(self.props.headsUpTeers).includes(personId)) {
-            //   volunteers[personId]['isHeadsUp'] = true;
-            //   volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
-            // }
+            if (Object.keys(self.props.headsUpTeers).includes(personId)) {
+              loglevel.info(personId);
+              volunteers[personId]['isHeadsUp'] = true;
+              if (self.props.headsUpTeers[personId]['Carpool Site']) {
+                volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
+              }
+            }
           });
 
           fetchNextPage();
