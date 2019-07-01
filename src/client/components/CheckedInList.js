@@ -35,14 +35,14 @@ class CheckedInList extends React.Component {
   }
 
   render () {
-    const listToRender = (this.props.filteredTeers.length > 0) ? this.props.filteredTeers : Object.values(this.props.checkedInTeers);
+    const listToRender = (this.props.filteredTeers.length > 0) ? this.props.filteredTeers : Object.values(this.props.checkedInTeers).map((info) => info["Volunteer ID"]);
 
     const teerListItems = [];
     listToRender.forEach(personId => {
       teerListItems.push(
         <CheckedInListRow
           personId = {personId}
-          attendanceRecordId = {Object.keys(this.props.checkedInTeers).find(attendanceRecordId => this.props.checkedInTeers[attendanceRecordId] === personId)}
+          attendanceRecordId = {Object.keys(this.props.checkedInTeers).find(attendanceRecordId => this.props.checkedInTeers[attendanceRecordId]["Volunteer ID"] === personId)}
           firstName = {this.props.volunteerInfo[personId]['First Name']}
           lastName = {this.props.volunteerInfo[personId]['Last Name']}
           paid = {this.props.volunteerInfo[personId]['Paid']}

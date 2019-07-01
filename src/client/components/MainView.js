@@ -37,15 +37,19 @@ class MainView extends React.Component {
   // gets volunteer info from the Profiles table
   componentDidMount () {
 
+    let carpoolSite_init = "";
+
     if (localStorage.getItem('defaultCarpoolSiteId')) {
-      this.props.setCarpoolSiteId(localStorage.getItem('defaultCarpoolSiteId'));
+      const siteId = localStorage.getItem('defaultCarpoolSiteId');
+      this.props.setCarpoolSiteId(siteId);
+      carpoolSite_init = siteId;
     } else {
       this.props.history.push("/siteSelect");
     }
 
     let self = this;
 
-    const attendancePromise = sitcAirtable.getAttendanceRecordsToday();
+    const attendancePromise = sitcAirtable.getAttendanceRecordsToday(carpoolSite_init);
     const headsUpPromise = attendancePromise
       .then(info => this.props.updateCheckedInTeers(info))
       .then(() => {return  sitcAirtable.getHeadsUp(this.props.carpoolSiteId)})
@@ -57,6 +61,8 @@ class MainView extends React.Component {
 
       const volunteers = {};
 
+      const checkedInIds = Object.values(self.props.checkedInTeers).map((teerInfo) => teerInfo["Volunteer ID"][0]);
+
       base(AIRTABLE.PROFILES_TABLE).select({
         // maxRecords: 100,
         view: "DO NOT FILTER OR SORT",
@@ -64,7 +70,7 @@ class MainView extends React.Component {
           records.forEach(function (record) {
             let personId = record.fields['PersonID'];
             volunteers[personId] = record.fields;
-            if (Object.values(self.props.checkedInTeers).includes(personId)) {
+            if (checkedInIds.includes(personId)) {
               if (Object.keys(self.props.headsUpTeers).includes(personId)) {
                 volunteers[personId]['isHeadsUp'] = true;
                 volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
@@ -101,7 +107,11 @@ class MainView extends React.Component {
     sitcAirtable.checkIn(personId, hours, this.props.carpoolSiteId).then(attendanceRecordId => {
       loglevel.info("Checked in!");
       const updatedCheckedInTeers = {...this.props.checkedInTeers};
-      updatedCheckedInTeers[attendanceRecordId] = personId
+      updatedCheckedInTeers[attendanceRecordId] = {
+        "Volunteer ID": personId,
+        "Hours": hours,
+        "Carpool Site": this.props.carpoolSiteId,
+      }
       this.props.updateCheckedInTeers(updatedCheckedInTeers);
       loglevel.info(this.props.checkedInTeers);
 

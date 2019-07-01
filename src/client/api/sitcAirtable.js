@@ -48,7 +48,7 @@ function checkOut (attendanceRecordId) {
   return myPromise;
 }
 
-function getAttendanceRecordsToday () {
+function getAttendanceRecordsToday (forCarpoolSite) {
   const myPromise = new Promise((resolve, reject) => {
     const nowInDetroit = myDatetime.getTimeInDetroit();
     // thanks to user113716 on SO for the clever way to add leading zeros without any comparisons
@@ -66,10 +66,13 @@ function getAttendanceRecordsToday () {
       view: AIRTABLE.ATTENDANCE_VIEW,
       // cellFormat: 'string',
       // userLocale: 'en-us',
-      filterByFormula: `DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}'`,
+      filterByFormula: `AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', SEARCH("${forCarpoolSite}", ARRAYJOIN({Carpool Site}, ",")))`,
       timeZone: AIRTABLE.TIME_ZONE,
     }).eachPage(function page(records, fetchNextPage) {
-      records.forEach(record => checkedInTeers[record.get("Record ID")] = record.get("Volunteer ID")[0]);
+      records.forEach(record => checkedInTeers[record.get("Record ID")] = {
+        "Volunteer ID": record.get("Volunteer ID"),
+        "Carpool Site": record.get("Carpool Site"),
+      });
       fetchNextPage();
     }, function done(err) {
       if (err) {
@@ -133,7 +136,7 @@ function getHeadsUp (forCarpoolSite) {
     base(AIRTABLE.HEADS_UP_TABLE).select({
       // Selecting the first 3 records in Grid view:
       view: AIRTABLE.HEADS_UP_VIEW,
-      filterByFormula: `SEARCH("${forCarpoolSite}", ARRAYJOIN({Carpool Site}, ","))`,
+      filterByFormula: `AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', SEARCH("${forCarpoolSite}", ARRAYJOIN({Carpool Site}, ",")))`,
     }).eachPage(function page(records, fetchNextPage) {
       // This function (`page`) will get called for each page of records.
 
