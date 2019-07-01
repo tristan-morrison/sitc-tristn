@@ -93,7 +93,6 @@ function getCarpoolSites () {
 
     base(AIRTABLE.CARPOOL_SITES_TABLE).select({
       // Selecting the first 3 records in Grid view:
-      maxRecords: 50,
       view: AIRTABLE.CARPOOL_SITES_VIEW,
     }).eachPage(function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.

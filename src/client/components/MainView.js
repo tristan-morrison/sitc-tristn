@@ -49,6 +49,9 @@ class MainView extends React.Component {
 
     let self = this;
 
+    // in this first function call only, we use the carpoolSite_init variable instead of this.props.carpoolSiteId
+    // this is because this.props.carpoolSiteId likely has not been set yet because this call occurs so soon after our call to setState
+    // Note: the strictly correct solution would be to have this call run after the resolution of a promise guaranteeing that this.props.carpoolSiteId has been set
     const attendancePromise = sitcAirtable.getAttendanceRecordsToday(carpoolSite_init);
     const headsUpPromise = attendancePromise
       .then(info => this.props.updateCheckedInTeers(info))
@@ -64,7 +67,6 @@ class MainView extends React.Component {
       const checkedInIds = Object.values(self.props.checkedInTeers).map((teerInfo) => teerInfo["Volunteer ID"][0]);
 
       base(AIRTABLE.PROFILES_TABLE).select({
-        // maxRecords: 100,
         view: "DO NOT FILTER OR SORT",
       }).eachPage((records, fetchNextPage) => {
           records.forEach(function (record) {
