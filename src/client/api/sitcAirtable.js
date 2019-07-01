@@ -6,7 +6,7 @@ import {
 } from './../constants';
 import * as loglevel from 'loglevel';
 
-function checkIn (personId, hours) {
+function checkIn (personId, hours, carpoolSiteId) {
   const myPromise = new Promise((resolve, reject) => {
     var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.BASE_ID);
 
@@ -14,6 +14,7 @@ function checkIn (personId, hours) {
       "Volunteer ID": [
         personId
       ],
+      "Carpool Site": [carpoolSiteId],
       "Hours": hours,
       "On Site": false
     }, function(err, record) {
@@ -127,11 +128,12 @@ function getHeadsUp (forCarpoolSite) {
     // https://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date
     const nowInDetroitStr = nowInDetroit.getFullYear() + "-" + ("0" + (nowInDetroit.getMonth() + 1)).slice(-2) + "-" + ("0" + nowInDetroit.getDate()).slice(-2);
 
+    loglevel.info("carpoolSiteId: " + `${forCarpoolSite} hello ma'am`);
+
     base(AIRTABLE.HEADS_UP_TABLE).select({
       // Selecting the first 3 records in Grid view:
-      maxRecords: 50,
       view: AIRTABLE.HEADS_UP_VIEW,
-      filterByFormula: `DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}'`, // AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', {Carpool Site} = '${forCarpoolSite}')
+      filterByFormula: `SEARCH("${forCarpoolSite}", ARRAYJOIN({Carpool Site}, ","))`,
     }).eachPage(function page(records, fetchNextPage) {
       // This function (`page`) will get called for each page of records.
 

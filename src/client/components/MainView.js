@@ -62,17 +62,25 @@ class MainView extends React.Component {
         view: "DO NOT FILTER OR SORT",
       }).eachPage((records, fetchNextPage) => {
           records.forEach(function (record) {
-            const personId = record.fields['PersonID'];
+            let personId = record.fields['PersonID'];
             volunteers[personId] = record.fields;
-            if (!Object.values(self.props.checkedInTeers).includes(personId)) {
-                self.props.notCheckedIn.push(personId);
-            }
-            if (Object.keys(self.props.headsUpTeers).includes(personId)) {
-              loglevel.info(personId);
-              volunteers[personId]['isHeadsUp'] = true;
-              if (self.props.headsUpTeers[personId]['Carpool Site']) {
-                volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
+            if (Object.values(self.props.checkedInTeers).includes(personId)) {
+              if (Object.keys(self.props.headsUpTeers).includes(personId)) {
+                volunteers[personId]['isHeadsUp'] = true;
+                volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
+                delete self.props.headsUpTeers[personId];
               }
+            } else {
+                self.props.notCheckedIn.push(personId);
+
+                if (Object.keys(self.props.headsUpTeers).includes(personId)) {
+                  loglevel.info(personId);
+                  volunteers[personId]['isHeadsUp'] = true;
+                  volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
+                  if (self.props.headsUpTeers[personId]['Carpool Site']) {
+                    volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
+                  }
+                }
             }
           });
 
@@ -90,7 +98,7 @@ class MainView extends React.Component {
   }
 
   checkInHandler (personId, hours) {
-    sitcAirtable.checkIn(personId, hours).then(attendanceRecordId => {
+    sitcAirtable.checkIn(personId, hours, this.props.carpoolSiteId).then(attendanceRecordId => {
       loglevel.info("Checked in!");
       const updatedCheckedInTeers = {...this.props.checkedInTeers};
       updatedCheckedInTeers[attendanceRecordId] = personId
@@ -116,6 +124,11 @@ class MainView extends React.Component {
 
       // Emplace teer in notCheckedInTeers
       this.props.updateNotCheckedInTeers(this.props.notCheckedIn.concat([personId]));
+
+      // If volunteer is HeadsUp, put them back in headsUpTeers
+      if (this.props.volunteerInfo[personId].isHeadsUp) {
+        this.props.headsUpTeers[personId] = this.props.volunteerInfo[personId].headsUpRecId;
+      }
     })
   }
 
