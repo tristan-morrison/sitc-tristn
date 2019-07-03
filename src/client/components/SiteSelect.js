@@ -20,8 +20,6 @@ import lightGreen from '@material-ui/core/colors/lightGreen';
 import pink from '@material-ui/core/colors/pink';
 import red from '@material-ui/core/colors/red';
 
-import sitcAirtable from './../api/sitcAirtable';
-
 const COLORS = [
   'deepPurple',
   'deepOrange',
@@ -60,6 +58,13 @@ const styles = theme => ({
   },
 });
 
+/*
+ * Props
+ * getSites - function; returns a promise that resolves to an object containing the sites
+ * type - string; either "carpool" or "project"
+ * localStorageItemId - key id of record in localStorage to which the id of the selected site should be saved
+ */
+
 class SiteSelect extends React.Component {
 
   constructor () {
@@ -67,13 +72,13 @@ class SiteSelect extends React.Component {
 
     this.state = {
       open: false,
-      carpoolSites: [],
+      sites: [],
     }
   }
 
   componentDidMount () {
-    const carpoolSitesPromise = sitcAirtable.getCarpoolSites();
-    carpoolSitesPromise.then(carpoolSites => this.setState({carpoolSites: carpoolSites, open: true}));
+    const sitesPromise = this.props.getSites();
+    sitesPromise.then(sites => this.setState({sites: sites, open: true}));
   }
 
   close () {
@@ -82,28 +87,28 @@ class SiteSelect extends React.Component {
   }
 
   handleClick (siteId) {
-    localStorage.setItem("defaultCarpoolSiteId", siteId);
+    localStorage.setItem(this.props.localStorageItemId, siteId);
     this.setState({open: false});
     this.props.history.push("/");
   }
 
   render () {
     const { classes } = this.props;
-    const { carpoolSites } = this.state;
+    const { sites } = this.state;
 
     return (
       <Dialog onClose={this.close} open={this.state.open}>
-        <DialogTitle>Set carpool site</DialogTitle>
+        <DialogTitle>Set {this.props.type} site</DialogTitle>
         <div>
           <List>
-            {Object.keys(this.state.carpoolSites).map(carpoolSiteId => (
-              <ListItem button onClick={() => this.handleClick(carpoolSiteId)}>
+            {Object.keys(this.state.sites).map(siteId => (
+              <ListItem button onClick={() => this.handleClick(siteId)} key={siteId}>
                 <ListItemAvatar>
                   <Avatar className={classes[COLORS.splice(Math.floor(Math.random() * COLORS.length), 1)[0]]}>
-                    {carpoolSites[carpoolSiteId]['Initials']}
+                    {sites[siteId]['Initials']}
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={carpoolSites[carpoolSiteId]['Shortname']}/>
+                <ListItemText primary={sites[siteId]['Shortname']}/>
               </ListItem>
             ))}
           </List>
