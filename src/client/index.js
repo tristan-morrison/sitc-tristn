@@ -10,7 +10,8 @@ import green from '@material-ui/core/colors/green';
 import deepOrange from '@material-ui/core/colors/deepOrange';
 
 import App from './components/App';
-import SiteSelect from './components/SiteSelect';
+import CarpoolSiteSelect from './components/CarpoolSiteSelect';
+import ProjectSiteSelect from './components/projectSite/ProjectSiteSelect';
 
 log.setLevel("trace");
 
@@ -29,7 +30,7 @@ function Root() {
     <BrowserRouter>
       <Switch>
         <Route path='/siteSelect' render={routeProps => (
-          <SiteSelect/>
+          <CarpoolSiteSelect/>
         )} />
         <Route path="/" render={routeProps => (
           <MuiThemeProvider theme={theme}>
