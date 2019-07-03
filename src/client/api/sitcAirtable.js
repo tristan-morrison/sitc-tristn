@@ -48,7 +48,7 @@ function checkOut (attendanceRecordId) {
   return myPromise;
 }
 
-function getAttendanceRecordsToday (forCarpoolSite) {
+function getAttendanceRecordsToday (forCarpoolSite, forProjectSite = null) {
   const myPromise = new Promise((resolve, reject) => {
     const nowInDetroit = myDatetime.getTimeInDetroit();
     // thanks to user113716 on SO for the clever way to add leading zeros without any comparisons
@@ -60,13 +60,18 @@ function getAttendanceRecordsToday (forCarpoolSite) {
 
     const checkedInTeers = [];
 
-    // TODO: figure out timezone matching
+    let siteFilter = "";
+    if (forProjectSite) {
+      siteFilter = "SEARCH('" + forProjectSite + "', ARRAYJOIN({Carpool Site}, ','))";
+    } else {
+      siteFilter = "SEARCH('" + forCarpoolSite + "', ARRAYJOIN({Carpool Site}, ','))";
+    }
 
     base(AIRTABLE.ATTENDANCE_TABLE).select({
       view: AIRTABLE.ATTENDANCE_VIEW,
       // cellFormat: 'string',
       // userLocale: 'en-us',
-      filterByFormula: `AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', SEARCH("${forCarpoolSite}", ARRAYJOIN({Carpool Site}, ",")))`,
+      filterByFormula: `AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', ${siteFilter})`,
       timeZone: AIRTABLE.TIME_ZONE,
     }).eachPage(function page(records, fetchNextPage) {
       records.forEach(record => checkedInTeers[record.get("Record ID")] = {
@@ -119,6 +124,43 @@ function getCarpoolSites () {
     return myPromise;
 }
 
+function getProjectSites() {
+  const myPromise = new Promise((resolve, reject) => {
+    const carpoolSites = {};
+
+    const base = new Airtable({
+      apiKey: process.env.AIRTABLE_API_KEY
+    }).base(process.env.BASE_ID);
+
+    base(AIRTABLE.PROJECT_SITES_TABLE).select({
+      // Selecting the first 3 records in Grid view:
+      view: AIRTABLE.PROJECT_SITES_VIEW,
+    }).eachPage(function page(records, fetchNextPage) {
+      // This function (`page`) will get called for each page of records.
+
+      records.forEach(function (record) {
+        carpoolSites[record.get('Record ID')] = record.fields;
+      });
+
+      // To fetch the next page of records, call `fetchNextPage`.
+      // If there are more records, `page` will get called again.
+      // If there are no more records, `done` will get called.
+      fetchNextPage();
+
+    }, function done(err) {
+      if (err) {
+        console.error(err);
+        return;
+        reject(err);
+      } else {
+        resolve(carpoolSites);
+      }
+    });
+  });
+
+  return myPromise;
+}
+
 function getHeadsUp (forCarpoolSite) {
   const myPromise = new Promise ((resolve, reject) => {
     const headsUpTeers = {};
@@ -165,5 +207,6 @@ export default {
   checkOut,
   getAttendanceRecordsToday,
   getCarpoolSites,
+  getProjectSites,
   getHeadsUp,
 };
