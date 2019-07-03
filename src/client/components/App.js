@@ -8,7 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import TristnAppBar from './TristnAppBar';
 import MainView from './MainView'
-import SiteSelect from './SiteSelect';
+// import CarpoolSiteSelect from './CarpoolSiteSelect';
 import sitcAirtable from './../api/sitcAirtable';
 
 const styles = theme => ({
@@ -44,6 +44,7 @@ class App extends React.Component {
     this.updateHeadsUpTeers = this.updateHeadsUpTeers.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
     this.setCarpoolSiteId = this.setCarpoolSiteId.bind(this);
+    this.setProjectSiteId = this.setProjectSiteId.bind(this);
   }
 
   componentDidMount () {
@@ -101,6 +102,10 @@ class App extends React.Component {
 
   setCarpoolSiteId (siteId) {
     this.setState({carpoolSiteId: siteId});
+  }
+
+  setProjectSiteId (siteId) {
+    this.setState({projectSiteId: siteId});
   }
 
   render () {
