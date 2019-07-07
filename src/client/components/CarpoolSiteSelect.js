@@ -8,9 +8,11 @@ import SiteSelect from "./SiteSelect";
 export default function CarpoolSiteSelect (props) {
   return (
     <SiteSelect
+      {...props}
       type="carpool"
       getSites={sitcAirtable.getCarpoolSites}
       localStorageItemId="defaultCarpoolSiteId"
+      routeUrl="/"
     />
   )
 }

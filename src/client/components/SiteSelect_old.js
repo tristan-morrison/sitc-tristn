@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import loglevel from 'loglevel';
 import { withRouter } from 'react-router-dom';
 
@@ -64,25 +64,43 @@ const styles = theme => ({
  * type - string; either "carpool" or "project"
  * localStorageItemId - key id of record in localStorage to which the id of the selected site should be saved
  */
-function SiteSelect (props) {
-    const [sites, setSites] = useState({});
 
-    const sitesPromise = props.getSites();
-    sitesPromise.then(mySites => setSites(mySites));
+class SiteSelect extends React.Component {
 
-    const { classes } = props;
+  constructor () {
+    super();
 
-    const handleClick = (siteId) => {
-        localStorage.setItem(props.localStorageItemId, siteId);
-        props.history.push(props.routeUrl);
-        props.close();
+    this.state = {
+      open: false,
+      sites: [],
     }
+  }
+
+  componentDidMount () {
+    const sitesPromise = this.props.getSites();
+    sitesPromise.then(sites => this.setState({sites: sites, open: true}));
+  }
+
+  close () {
+    loglevel.info("Closing dialog!");
+    this.setState({ open: false })
+  }
+
+  handleClick (siteId) {
+    localStorage.setItem(this.props.localStorageItemId, siteId);
+    this.setState({open: false});
+    this.props.history.push("/");
+  }
+
+  render () {
+    const { classes } = this.props;
+    const { sites } = this.state;
 
     return (
-     <div>
+        <div>
           <List>
-            {Object.keys(sites).map(siteId => (
-              <ListItem button onClick={() => handleClick(siteId)} key={siteId}>
+            {Object.keys(this.state.sites).map(siteId => (
+              <ListItem button onClick={() => this.handleClick(siteId)} key={siteId}>
                 <ListItemAvatar>
                   <Avatar className={classes[COLORS.splice(Math.floor(Math.random() * COLORS.length), 1)[0]]}>
                     {sites[siteId]['Initials']}
@@ -94,6 +112,8 @@ function SiteSelect (props) {
           </List>
         </div>
     );
+  }
+
 }
 
-export default withStyles(styles)(SiteSelect);
+export default withRouter(withStyles(styles)(SiteSelect));

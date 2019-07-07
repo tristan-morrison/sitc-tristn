@@ -6,6 +6,32 @@ import {
 } from './../constants';
 import * as loglevel from 'loglevel';
 
+function getProfiles() {
+  const myPromise = new Promise((resolve, reject) => {
+    const teers = {};
+
+    const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.BASE_ID);
+    base(AIRTABLE.PROFILES_TABLE).select({
+      view: AIRTABLE.PROFILES_VIEW,
+    }).eachPage((records, fetchNextPage) => {
+      records.forEach((record) => {
+        teers[record.fields["PersonID"]] = record.fields;
+      });
+  
+      fetchNextPage();
+    }, (err) => {
+      if (err) {
+        loglevel.error(err);
+      }
+      loglevel.log("teers from getProfiles");
+      loglevel.log(teers);
+      resolve(teers);
+    });
+  })
+
+  return myPromise;
+}
+
 function checkIn (personId, hours, carpoolSiteId) {
   const myPromise = new Promise((resolve, reject) => {
     var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.BASE_ID);
@@ -63,6 +89,8 @@ function getAttendanceRecordsToday (forCarpoolSite, forProjectSite = null) {
     let siteFilter = "";
     if (forProjectSite) {
       siteFilter = "SEARCH('" + forProjectSite + "', ARRAYJOIN({Carpool Site}, ','))";
+
+      
     } else {
       siteFilter = "SEARCH('" + forCarpoolSite + "', ARRAYJOIN({Carpool Site}, ','))";
     }
@@ -126,7 +154,7 @@ function getCarpoolSites () {
 
 function getProjectSites() {
   const myPromise = new Promise((resolve, reject) => {
-    const carpoolSites = {};
+    const projectSites = {};
 
     const base = new Airtable({
       apiKey: process.env.AIRTABLE_API_KEY
@@ -139,7 +167,7 @@ function getProjectSites() {
       // This function (`page`) will get called for each page of records.
 
       records.forEach(function (record) {
-        carpoolSites[record.get('Record ID')] = record.fields;
+        projectSites[record.get('Record ID')] = record.fields;
       });
 
       // To fetch the next page of records, call `fetchNextPage`.
@@ -153,7 +181,7 @@ function getProjectSites() {
         return;
         reject(err);
       } else {
-        resolve(carpoolSites);
+        resolve(projectSites);
       }
     });
   });
@@ -203,6 +231,7 @@ function getHeadsUp (forCarpoolSite) {
 }
 
 export default {
+  getProfiles,
   checkIn,
   checkOut,
   getAttendanceRecordsToday,

@@ -1,5 +1,6 @@
 export const AIRTABLE = {
   PROFILES_TABLE: 'Profiles',
+  PROFILES_VIEW: 'DO NOT FILTER OR SORT',
   ATTENDANCE_TABLE: 'Attendance',
   ATTENDANCE_VIEW: 'Grid view',
   CARPOOL_SITES_TABLE: 'Carpool Sites',
