@@ -6,13 +6,24 @@ import {
 } from './../constants';
 import * as loglevel from 'loglevel';
 
-function getProfiles() {
+function getProfiles (subset = null) {
   const myPromise = new Promise((resolve, reject) => {
     const teers = {};
+
+    loglevel.info(subset);
+
+    let filter = {};
+    if (subset) {
+      const subsetString = subset.join(",");
+      filter = {
+        filterByFormula: `SEARCH({PersonID}, "${subsetString}")`,
+      };
+    }
 
     const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.BASE_ID);
     base(AIRTABLE.PROFILES_TABLE).select({
       view: AIRTABLE.PROFILES_VIEW,
+      ...filter,
     }).eachPage((records, fetchNextPage) => {
       records.forEach((record) => {
         teers[record.fields["PersonID"]] = record.fields;
@@ -74,7 +85,7 @@ function checkOut (attendanceRecordId) {
   return myPromise;
 }
 
-function getAttendanceRecordsToday (forCarpoolSite, forProjectSite = null) {
+function getAttendanceRecordsToday (forCarpoolSite = null) {
   const myPromise = new Promise((resolve, reject) => {
     const nowInDetroit = myDatetime.getTimeInDetroit();
     // thanks to user113716 on SO for the clever way to add leading zeros without any comparisons
@@ -86,25 +97,25 @@ function getAttendanceRecordsToday (forCarpoolSite, forProjectSite = null) {
 
     const checkedInTeers = [];
 
-    let siteFilter = "";
-    if (forProjectSite) {
-      siteFilter = "SEARCH('" + forProjectSite + "', ARRAYJOIN({Carpool Site}, ','))";
-
-      
+    let myFilter = "";
+    if (forCarpoolSite) {
+      const siteFilter = "SEARCH('" + forCarpoolSite + "', ARRAYJOIN({Carpool Site}, ','))";
+      myFilter = `AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', ${siteFilter})`
     } else {
-      siteFilter = "SEARCH('" + forCarpoolSite + "', ARRAYJOIN({Carpool Site}, ','))";
+      myFilter = `DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}'`;
     }
 
     base(AIRTABLE.ATTENDANCE_TABLE).select({
       view: AIRTABLE.ATTENDANCE_VIEW,
       // cellFormat: 'string',
       // userLocale: 'en-us',
-      filterByFormula: `AND(DATETIME_FORMAT(SET_TIMEZONE({Date}, '${AIRTABLE.TIME_ZONE}'), 'YYYY-MM-DD') = '${nowInDetroitStr}', ${siteFilter})`,
+      filterByFormula: myFilter,
       timeZone: AIRTABLE.TIME_ZONE,
     }).eachPage(function page(records, fetchNextPage) {
       records.forEach(record => checkedInTeers[record.get("Record ID")] = {
         "Volunteer ID": record.get("Volunteer ID"),
         "Carpool Site": record.get("Carpool Site"),
+        "On Site": record.get("On Site"),
       });
       fetchNextPage();
     }, function done(err) {
@@ -230,6 +241,25 @@ function getHeadsUp (forCarpoolSite) {
   return myPromise;
 }
 
+function setOnSiteStatus (attendanceRecId, isOnSite) {
+  const myPromise = new Promise ((resolve, reject) => {
+
+    const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
+
+    base(AIRTABLE.ATTENDANCE_TABLE).update(attendanceRecId, {
+        "On Site": isOnSite
+    }, function (err, record) {
+      if (err) {
+        loglevel.info(err);
+        return;
+      }
+      loglevel.info(record.get('Volunteer ID'));
+      resolve(record);
+    })
+  });
+  return myPromise;
+}
+
 export default {
   getProfiles,
   checkIn,
@@ -238,4 +268,5 @@ export default {
   getCarpoolSites,
   getProjectSites,
   getHeadsUp,
+  setOnSiteStatus,
 };

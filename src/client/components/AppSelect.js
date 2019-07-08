@@ -16,7 +16,11 @@ export default function (props) {
 
     const [isOpen, setIsOpen] = useState(true);
 
-    const [activeTab, setActiveTab] = useState(0);
+    let initialTab = 0;
+    if (/project/.test(props.location.pathname)) {
+        initialTab = 1;
+    }
+    const [activeTab, setActiveTab] = useState(initialTab);
 
     const handleActiveTabChange = (event, value) => {
         setActiveTab(value)
@@ -47,12 +51,14 @@ export default function (props) {
                 </Tabs>
                 <Switch>
                     <Route exact path="/siteSelect" render={routeProps => (
-                        <CarpoolSiteSelect 
+                        <CarpoolSiteSelect
+                            {...routeProps} 
                             close={close}
                         />
                     )} />
                     <Route path="/siteSelect/project" render={routeProps => (
                         <ProjectSiteSelect 
+                            {...routeProps}
                             close={close}
                         />
                     )}/>

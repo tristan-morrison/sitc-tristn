@@ -197,7 +197,7 @@ class TristnAppBar extends React.Component {
               <SearchIcon />
             </div>
             <Input
-              disableUnderline = "true"
+              disableUnderline = {true}
               value = {this.props.searchText}
               onChange = {this.updateSearchTextAndFilter}
               onFocus = {this.onSearchFocused}

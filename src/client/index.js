@@ -32,11 +32,13 @@ function Root() {
     <BrowserRouter>
       <Switch>
         <Route path='/siteSelect' render={routeProps => (
-          <AppSelect
-            {...routeProps}
-          />
+          < MuiThemeProvider theme = {theme}>
+            <AppSelect
+              {...routeProps}
+            />
+          </ MuiThemeProvider>
         )} />
-        <Route path="/projectSite" render={routeProps => (
+        <Route path="/project" render={routeProps => (
           <MuiThemeProvider theme={theme}>
             <ProjectApp
               {...routeProps}

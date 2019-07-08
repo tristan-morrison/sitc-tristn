@@ -24,8 +24,10 @@ class ProjectApp extends React.Component {
       volunteerInfo: {},
       filteredTeers: [],
       searchText: '',
-      checkedInTeers: {},
-      notCheckedInTeers: [],
+      attendanceRecs: {},
+      onSiteTeers: {},
+      notOnSiteTeers: {},
+      carpoolSites: {},
       projectSites: {},
       projectSiteId: {},
       defaultProjectSiteId: '',
@@ -34,9 +36,11 @@ class ProjectApp extends React.Component {
     }
 
     this.updateVolunteerInfo = this.updateVolunteerInfo.bind(this);
-    this.updateCheckedInTeers = this.updateCheckedInTeers.bind(this);
-    this.updateNotCheckedInTeers = this.updateNotCheckedInTeers.bind(this);
+    this.updateOnSiteTeers = this.updateOnSiteTeers.bind(this);
+    this.updateNotOnSiteTeers = this.updateNotOnSiteTeers.bind(this);
     this.updateProjectSites = this.updateProjectSites.bind(this);
+    this.updateCarpoolSites = this.updateCarpoolSites.bind(this);
+    this.updateAttendanceRecs = this.updateAttendanceRecs.bind(this);
     this.setFilter = this.setFilter.bind(this);
     this.setSearchText = this.setSearchText.bind(this);
     this.setActiveTab = this.setActiveTab.bind(this);
@@ -51,6 +55,10 @@ class ProjectApp extends React.Component {
     this.setState({projectSites: sites});
   }
 
+  updateCarpoolSites (sites) {
+    this.setState({carpoolSites: sites});
+  }
+
   updateDefaultProjectSite (siteId) {
     this.setState({defaultProjectSiteId: siteId});
   }
@@ -59,13 +67,17 @@ class ProjectApp extends React.Component {
     this.setState({volunteerInfo: info});
   }
 
-  updateCheckedInTeers (info) {
-    this.setState({checkedInTeers: info})
+  updateAttendanceRecs (info) {
+    this.setState({attendanceRecs: info});
+  }
+
+  updateOnSiteTeers (info) {
+    this.setState({onSiteTeers: info})
     loglevel.info(info);
   }
 
-  updateNotCheckedInTeers (info) {
-    this.setState({notCheckedInTeers: info});
+  updateNotOnSiteTeers (info) {
+    this.setState({notOnSiteTeers: info});
     loglevel.info(info);
   }
 
@@ -104,21 +116,26 @@ class ProjectApp extends React.Component {
             setFilter={this.setFilter}
             setSearchText={this.setSearchText}
             volunteerInfo={this.state.volunteerInfo}
-            checkedInTeers={this.state.checkedInTeers}
-            notCheckedInTeers={this.state.notCheckedInTeers}
+            checkedInTeers={this.state.onSiteTeers}
+            notCheckedInTeers={Object.values(this.state.notOnSiteTeers).map((record) => record.personId)}
             activeTab={this.state.activeTab}
             searchText={this.state.searchText}
           />
           <MainView
             updateVolunteerInfo={this.updateVolunteerInfo}
-            updateCheckedInTeers={this.updateCheckedInTeers}
-            updateNotCheckedInTeers={this.updateNotCheckedInTeers}
+            updateOnSiteTeers={this.updateOnSiteTeers}
+            updateNotOnSiteTeers={this.updateNotOnSiteTeers}
+            updateProjectSites={this.updateProjectSites}
+            updateCarpoolSites={this.updateCarpoolSites}
+            updateAttendanceRecs={this.updateAttendanceRecs}
             updateHeadsUpTeers={this.updateHeadsUpTeers}
             volunteerInfo={this.state.volunteerInfo}
             filteredTeers={this.state.filteredTeers}
-            checkedInTeers={this.state.checkedInTeers}
-            notCheckedIn={this.state.notCheckedInTeers}
+            attendanceRecs={this.state.attendanceRecs}
+            onSiteTeers={this.state.onSiteTeers}
+            notOnSiteTeers={this.state.notOnSiteTeers}
             headsUpTeers={this.state.headsUpTeers}
+            carpoolSites={this.state.carpoolSites}
             projectSites={this.state.projectSites}
             projectSiteId={this.state.projectSiteId}
             setProjectSiteId={this.setProjectSiteId}
