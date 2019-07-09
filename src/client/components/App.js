@@ -139,6 +139,7 @@ class App extends React.Component {
             activeTab={this.state.activeTab}
             setActiveTab={this.setActiveTab}
             clearFilter={this.clearFilter}
+            setFilter={this.setFilter}
           />
         </React.Fragment>
       </div>

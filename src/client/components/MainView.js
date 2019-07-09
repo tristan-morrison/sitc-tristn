@@ -121,6 +121,12 @@ class MainView extends React.Component {
       const updatedNotCheckedIn = this.props.notCheckedIn.slice();
       updatedNotCheckedIn.splice(updatedNotCheckedIn.indexOf(personId), 1);
       this.props.updateNotCheckedInTeers(updatedNotCheckedIn);
+
+      if (this.props.filteredTeers.indexOf(personId) > -1) {
+        const updatedFilteredTeers = this.props.filteredTeers.slice();
+        updatedFilteredTeers.splice(updatedFilteredTeers.indexOf(personId), 1);
+        this.props.setFilter(updatedFilteredTeers);
+      }
     }, err => loglevel.error("Error with the server call!"));
   }
 
@@ -177,7 +183,7 @@ class MainView extends React.Component {
           onChange={this.handleTabChange}
           variant="fullWidth"
         >
-          <Tab label="Registered" />
+          <Tab label="HeadsUp" />
           <Tab label="Checked In" />
         </Tabs>
         {/* <SwipeableViews

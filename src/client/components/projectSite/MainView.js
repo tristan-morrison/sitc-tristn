@@ -6,13 +6,22 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 
 import VolunteerList from "./VolunteerList";
+import OnSiteList from "./OnSiteList";
 import sitcAirtable from "../../api/sitcAirtable";
 
 class MainView extends React.Component {
     constructor () {
         super();
 
+        this.state = {
+            tabVal: 0,
+            loadingTeerData: true,
+        }
+
         this.setOnSiteHandler = this.setOnSiteHandler.bind(this);
+        this.setNotOnSiteHandler = this.setNotOnSiteHandler.bind(this);
+        this.setTabIndex = this.setTabIndex.bind(this);
+        this.handleTabChange = this.handleTabChange.bind(this);
     }
 
     componentDidMount () {
@@ -71,7 +80,7 @@ class MainView extends React.Component {
     }
 
     setOnSiteHandler (personId) {
-        const attendanceRecId = teerInfo[personId].attendanceRecId;
+        const attendanceRecId = this.props.volunteerInfo[personId].attendanceRecId;
         sitcAirtable.setOnSiteStatus(attendanceRecId, true)
             .then((record) => {
                 const updatedOnSiteTeers = {
@@ -89,6 +98,41 @@ class MainView extends React.Component {
             });
     }
 
+    setNotOnSiteHandler (personId) {
+        const attendanceRecId = this.props.volunteerInfo[personId].attendanceRecId;
+        sitcAirtable.setOnSiteStatus(attendanceRecId, false)
+            .then((record) => {
+                const updatedNotOnSiteTeers = {
+                    ...this.props.notOnSiteTeers
+                };
+                updatedNotOnSiteTeers[attendanceRecId] = {
+                    personId: personId,
+                }
+                this.props.updateNotOnSiteTeers(updatedNotOnSiteTeers);
+
+                // have to slice because we need to assign a copy of the original, not a reference to it
+                const updatedOnSiteTeers = { ...this.props.onSiteTeers };
+                delete updatedOnSiteTeers[attendanceRecId];
+                this.props.updateOnSiteTeers(updatedOnSiteTeers);
+            });
+    }
+
+    handleTabChange(event, value) {
+        this.props.clearFilter();
+        this.props.setActiveTab(value);
+        switch (value) {
+            case 0:
+                this.props.history.push('/project');
+                break;
+            case 1:
+                this.props.history.push('/project/onsite');
+        }
+    }
+
+    setTabIndex (index) {
+        this.setState({tabVal: index});
+    }
+
     render () {
         return (
             <React.Fragment>
@@ -97,7 +141,7 @@ class MainView extends React.Component {
                     onChange={this.handleTabChange}
                     variant="fullWidth"
                 >
-                    <Tab label="Registered" />
+                    <Tab label="En Route" />
                     <Tab label="Checked In" />
                 </Tabs>
                 <Switch>
@@ -105,6 +149,7 @@ class MainView extends React.Component {
                         <VolunteerList
                             {...routeProps}
                             setOnSiteHandler={this.setOnSiteHandler}
+                            setNotOnSiteHandler={this.setNotOnSiteHandler}
                             volunteerInfo={this.props.volunteerInfo}
                             onSiteTeers={this.props.onSiteTeers}
                             notOnSiteTeers={this.props.notOnSiteTeers}
@@ -113,16 +158,16 @@ class MainView extends React.Component {
                             filteredTeers={this.props.filteredTeers}
                         />
                     )} />
-                    {/* <Route path="/project/onSite" render={routeProps => (
+                    <Route path="/project/onsite" render={routeProps => (
                         <OnSiteList
                             {...routeProps}
-                            checkOutHandler={this.checkOutHandler}
+                            setNotOnSiteHandler={this.setNotOnSiteHandler}
                             volunteerInfo={this.props.volunteerInfo}
                             onSiteTeers={this.props.onSiteTeers}
                             setTabIndex={this.setTabIndex}
                             filteredTeers={this.props.filteredTeers}
                         />
-                    )}/> */}
+                    )}/>
                 </Switch>
             </React.Fragment>
         );

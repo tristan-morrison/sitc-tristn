@@ -185,9 +185,9 @@ class TristnAppBar extends React.Component {
     return (
       <AppBar position="static">
         <Toolbar>
-          <IconButton aria-label="Open menu drawer" color="inherit">
+          {/* <IconButton aria-label="Open menu drawer" color="inherit">
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Typography variant="h6" color="inherit">
             Tristn
           </Typography>

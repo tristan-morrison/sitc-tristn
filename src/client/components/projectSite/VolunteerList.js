@@ -27,23 +27,25 @@ class VolunteerList extends React.Component {
       dialog: null,
     }
 
-    this.checkIn = this.checkIn.bind(this);
+    this.setOnSite = this.setOnSite.bind(this);
     this.closeDialog = this.closeDialog.bind(this);
     this.checkInDialog = this.checkInDialog.bind(this);
-  }
+    }
 
-  checkIn (personId, hours) {
+  setOnSite(personId) {
+    const onSiteIds = Object.values(this.props.onSiteTeers).map((teerInfo) => teerInfo.personId[0]);
 
-    const hideArr = this.state.hide.slice();
-    this.setState({ hide: hideArr.concat(personId)});
-
-    const checkedInIds = Object.values(this.props.checkedInTeers).map((teerInfo) => teerInfo["Volunteer ID"][0]);
-
-    if (checkedInIds.includes(personId)) {
+    if (onSiteIds.includes(personId)) {
       loglevel.error("This person is already checked in!!");
       return -1;
     }
-    this.props.checkInHandler(personId, hours)
+
+    const hideArr = this.state.hide.slice();
+    this.setState({
+      hide: hideArr.concat(personId)
+    });
+
+    this.props.setOnSiteHandler(personId)
   }
 
   checkInDialog (personId) {
@@ -83,7 +85,7 @@ class VolunteerList extends React.Component {
           hours = {this.props.volunteerInfo[personID]['Hours Credited']}
           carpoolSite = {this.props.volunteerInfo[personID].checkedInAtCarpoolSite}
           carpoolSites = {this.props.carpoolSites}
-          checkIn = {this.checkIn}
+          setOnSite = {this.setOnSite}
           checkInDialog = {this.checkInDialog}
           hide={hide.includes(personID)}
         />

@@ -1,6 +1,5 @@
 import React from 'react';
 import * as loglevel from 'loglevel';
-// import { Transition } from 'react-transition-group';
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -14,56 +13,51 @@ import Typography from '@material-ui/core/Typography';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import DriveEtaIcon from '@material-ui/icons/DriveEta';
 import AirlineSeatReclineNormalIcon from '@material-ui/icons/AirlineSeatReclineNormal';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 
-class VolunteerListRow extends React.Component {
+class OnSiteListRow extends React.Component {
 
   constructor () {
     super();
 
     this.state = {
-      avatar: '',
-      // show: true
+      show: true
     }
 
-    this.handleCheckInClick = this.handleCheckInClick.bind(this);
-    this.exited = this.exited.bind(this);
+    this.handleSetNotOnSiteClick = this.handleSetNotOnSiteClick.bind(this);
   }
 
-  exited () {
-    loglevel.info("componentWillUnmount ran!");
+  componentDidMount () {
+    // set the icon to go in this person's avatar
+    
   }
 
-  handleCheckInClick (event) {
-    this.props.setOnSite(this.props.personId);
+  handleSetNotOnSiteClick() {
+    this.setState({show: false});
+    this.props.setNotOnSite(this.props.personId);
   }
 
-  render() {
-
+  render () {
+    const avatar = this.state.avatar;
     const show = !this.props.hide;
 
-    const carpoolSiteName = (this.props.carpoolSite) ? this.props.carpoolSites[this.props.carpoolSite]['Shortname'] : '';
-
     return (
-      <Slide in={show} onExited={this.exited} direction="left" timeout={{enter: 0, exit: 300}}>
+      <Slide in={show} direction="right" timeout={{enter: 0, exit: 300}}>
         <ListItem key = {this.props.personId}>
-          {/* <ListItemIcon>
-            {avatar}
-          </ListItemIcon> */}
           <ListItemText
-            primary = {this.props.firstName + ' ' + this.props.lastName}
-            secondary = {carpoolSiteName}>
+            primary = {this.props.firstName + ' ' + this.props.lastName}>
           </ListItemText>
           <ListItemSecondaryAction>
-            <IconButton aria-label="Check In" onClick={this.handleCheckInClick}>
-              <ArrowForwardIcon />
+            <IconButton aria-label="Check In" onClick={this.handleSetNotOnSiteClick}>
+              <CloseIcon />
             </IconButton>
           </ListItemSecondaryAction>
         </ListItem>
-        </Slide>
+      </Slide>
     );
   }
+
 }
 
-export default VolunteerListRow;
+export default OnSiteListRow;

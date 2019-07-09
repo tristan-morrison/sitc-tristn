@@ -11,6 +11,8 @@ import uuid from 'uuid/v4';
 import util from 'util';
 import winston from 'winston';
 
+import projectRouter from "./projectRouter";
+
 dotenv.config();
 winston.level = 'debug';
 const logger = winston.createLogger({
@@ -78,13 +80,14 @@ app.use(passport.session());
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     // req.user is available for use here
-    logger.info(util.inspect(req))
     return next();
   }
 
   // denied. redirect to login
   res.redirect("/auth");
 }
+
+app.use("/project", projectRouter);
 
 app.get('/auth/success', passport.authenticate('google', { scope: ['openid'], failureRedirect: '/authFail' }), function (req, res) {
   logger.info(util.inspect(req.session));
@@ -101,15 +104,40 @@ app.get('/siteSelect', ensureAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, './index.html'));
 })
 
+app.get('/hello', (req, res) => {
+  logger.info("matched the hello route!");
+  res.send("Hello, World!");
+})
+
 app.get('/aProtectedRoute', ensureAuthenticated, (req, res) => {
   res.send("YOU ARE AUTHENTICATED. CONGRATS.")
 })
 
-app.get('/', ensureAuthenticated, (req, res) => {
+// app.get("/project", ensureAuthenticated, (req, res) => {
+//   logger.info("matched the default route!");
+//   logger.info(req.path);
+//   res.sendFile(path.join(__dirname, './index.html'));
+// })
+
+// app.get("/project/onsite", ensureAuthenticated, (req, res) => {
+//   logger.info("matched the default route!");
+//   logger.info(req.path);
+//   res.sendFile(path.join(__dirname, './index.html'));
+// })
+
+app.get("/checkedin", ensureAuthenticated, (req, res) => {
+  logger.info("matched the default route!");
+  logger.info(req.path);
   res.sendFile(path.join(__dirname, './index.html'));
 })
 
-app.use(express.static(path.join(__dirname, './')));
+app.get("/", ensureAuthenticated, (req, res) => {
+  logger.info("matched the default route!");
+  logger.info(req.path);
+  res.sendFile(path.join(__dirname, './index.html'));
+})
+
+app.use(express.static(path.join(__dirname, '.')));
 
 app.listen(3030, () => {
   console.log('Listening on localhost:3030')
