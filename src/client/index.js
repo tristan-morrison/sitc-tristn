@@ -11,8 +11,6 @@ import deepOrange from '@material-ui/core/colors/deepOrange';
 
 import App from './components/App';
 import ProjectApp from "./components/ProjectApp";
-import CarpoolSiteSelect from './components/CarpoolSiteSelect';
-import ProjectSiteSelect from './components/projectSite/ProjectSiteSelect';
 import AppSelect from "./components/AppSelect";
 
 log.setLevel("trace");
@@ -28,6 +26,15 @@ const theme = createMuiTheme({
 });
 
 function Root() {
+  const pathname = window.location.pathname;
+  if (!pathname.includes("siteSelect")) {
+    if (pathname.includes("project") && !localStorage.getItem("defaultProjectSiteId")) {
+      window.location.pathname = "/siteSelect/project";
+    } else if (!localStorage.getItem("defaultCarpoolSiteId")) {
+      window.location.pathname = "/siteSelect";
+    }
+  }
+
   return (
     <BrowserRouter>
       <Switch>
