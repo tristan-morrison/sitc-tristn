@@ -66,3 +66,4 @@ sessions/
 dist/
 /app.js
 /constants.js
+src/client/serverSpecificConsts.js
