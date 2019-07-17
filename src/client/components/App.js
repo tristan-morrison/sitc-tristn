@@ -34,6 +34,7 @@ class App extends React.Component {
       activeTab: 0
     }
 
+    this.updateCarpoolSites = this.updateCarpoolSites.bind(this);
     this.updateVolunteerInfo = this.updateVolunteerInfo.bind(this);
     this.updateCheckedInTeers = this.updateCheckedInTeers.bind(this);
     this.updateNotCheckedInTeers = this.updateNotCheckedInTeers.bind(this);
@@ -45,16 +46,6 @@ class App extends React.Component {
     this.clearFilter = this.clearFilter.bind(this);
     this.setCarpoolSiteId = this.setCarpoolSiteId.bind(this);
     this.setProjectSiteId = this.setProjectSiteId.bind(this);
-  }
-
-  componentDidMount () {
-
-    const carpoolSitesPromise = sitcAirtable.getCarpoolSites();
-    carpoolSitesPromise.then(siteInfo => {
-      loglevel.info(siteInfo);
-      this.setState({carpoolSites: siteInfo});
-    })
-
   }
 
   updateCarpoolSites (sites) {
@@ -124,6 +115,7 @@ class App extends React.Component {
             searchText={this.state.searchText}
           />
           <MainView
+            updateCarpoolSites={this.updateCarpoolSites}
             updateVolunteerInfo={this.updateVolunteerInfo}
             updateCheckedInTeers={this.updateCheckedInTeers}
             updateNotCheckedInTeers={this.updateNotCheckedInTeers}

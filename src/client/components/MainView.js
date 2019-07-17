@@ -39,15 +39,13 @@ class MainView extends React.Component {
 
     let carpoolSite_init = "";
 
-    if (localStorage.getItem('defaultCarpoolSiteId')) {
-      const siteId = localStorage.getItem('defaultCarpoolSiteId');
-      this.props.setCarpoolSiteId(siteId);
-      carpoolSite_init = siteId;
-    } else {
-      this.props.history.push("/siteSelect");
-    }
+    const siteId = localStorage.getItem('defaultCarpoolSiteId');
+    this.props.setCarpoolSiteId(siteId);
+    carpoolSite_init = siteId;
 
     let self = this;
+
+    sitcAirtable.getCarpoolSites().then((sites) => this.props.updateCarpoolSites(sites));
 
     // in this first function call only, we use the carpoolSite_init variable instead of this.props.carpoolSiteId
     // this is because this.props.carpoolSiteId likely has not been set yet because this call occurs so soon after our call to setState
@@ -55,12 +53,16 @@ class MainView extends React.Component {
     const attendancePromise = sitcAirtable.getAttendanceRecordsToday(carpoolSite_init);
     const headsUpPromise = attendancePromise
       .then(info => this.props.updateCheckedInTeers(info))
-      .then(() => {return  sitcAirtable.getHeadsUp(this.props.carpoolSiteId)})
+      .then(() => {
+        return sitcAirtable.getHeadsUp(this.props.carpoolSiteId)
+      })
       .then(info => this.props.updateHeadsUpTeers(info));
 
     headsUpPromise.then(() => {
       loglevel.info(this.props.headsUpTeers);
-      const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.BASE_ID);
+      const base = new Airtable({
+        apiKey: process.env.AIRTABLE_API_KEY
+      }).base(process.env.BASE_ID);
 
       const volunteers = {};
 
@@ -69,40 +71,40 @@ class MainView extends React.Component {
       base(AIRTABLE.PROFILES_TABLE).select({
         view: "DO NOT FILTER OR SORT",
       }).eachPage((records, fetchNextPage) => {
-          records.forEach(function (record) {
-            let personId = record.fields['PersonID'];
-            volunteers[personId] = record.fields;
-            if (checkedInIds.includes(personId)) {
-              if (Object.keys(self.props.headsUpTeers).includes(personId)) {
-                volunteers[personId]['isHeadsUp'] = true;
-                volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
-                delete self.props.headsUpTeers[personId];
-              }
-            } else {
-                self.props.notCheckedIn.push(personId);
-
-                if (Object.keys(self.props.headsUpTeers).includes(personId)) {
-                  loglevel.info(personId);
-                  volunteers[personId]['isHeadsUp'] = true;
-                  volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
-                  if (self.props.headsUpTeers[personId]['Carpool Site']) {
-                    volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
-                  }
-                }
+        records.forEach(function (record) {
+          let personId = record.fields['PersonID'];
+          volunteers[personId] = record.fields;
+          if (checkedInIds.includes(personId)) {
+            if (Object.keys(self.props.headsUpTeers).includes(personId)) {
+              volunteers[personId]['isHeadsUp'] = true;
+              volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
+              delete self.props.headsUpTeers[personId];
             }
-          });
+          } else {
+            self.props.notCheckedIn.push(personId);
 
-          fetchNextPage();
-      }, (err) => {
-          if (err) {
-            loglevel.error(err);
+            if (Object.keys(self.props.headsUpTeers).includes(personId)) {
+              loglevel.info(personId);
+              volunteers[personId]['isHeadsUp'] = true;
+              volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
+              if (self.props.headsUpTeers[personId]['Carpool Site']) {
+                volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
+              }
+            }
           }
-          this.props.updateVolunteerInfo(volunteers);
-          this.setState({loadingTeerData: false})
         });
+
+        fetchNextPage();
+      }, (err) => {
+        if (err) {
+          loglevel.error(err);
+        }
+        this.props.updateVolunteerInfo(volunteers);
+        this.setState({
+          loadingTeerData: false
+        })
       });
-
-
+    });
   }
 
   checkInHandler (personId, hours) {
