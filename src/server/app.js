@@ -100,7 +100,7 @@ app.get('/authFail', (req, res) => {
 
 app.get('/auth', passport.authenticate('google', { scope: ['openid'] }));
 
-app.get('/siteSelect', ensureAuthenticated, (req, res) => {
+app.get(/\/siteSelect(\/.*)*/, ensureAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, './index.html'));
 })
 
