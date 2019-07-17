@@ -6,7 +6,6 @@ import sitcAirtable from "./../api/sitcAirtable";
 import SiteSelect from "./SiteSelect";
 
 export default function CarpoolSiteSelect (props) {
-  console.log("mounting a CarpoolSiteSelec");
   return (
     <SiteSelect
       {...props}
