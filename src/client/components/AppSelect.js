@@ -34,7 +34,6 @@ export default function (props) {
     };
 
     const close = () => {
-        loglevel.info("Closing dialog!");
         setIsOpen(false);
     }
 
