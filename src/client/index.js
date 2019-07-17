@@ -12,8 +12,9 @@ import deepOrange from '@material-ui/core/colors/deepOrange';
 import App from './components/App';
 import ProjectApp from "./components/ProjectApp";
 import AppSelect from "./components/AppSelect";
+import LOGLEVEL_LEVEL from "./serverSpecificConsts";
 
-log.setLevel("trace");
+log.setLevel(LOGLEVEL_LEVEL);
 
 const theme = createMuiTheme({
   palette: {
