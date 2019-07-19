@@ -11,6 +11,7 @@ import CarpoolSiteSelect from "./CarpoolSiteSelect";
 import ProjectSiteSelect from "./projectSite/ProjectSiteSelect";
 
 export default function (props) {
+    loglevel.info("Mounted AppSelect")
     loglevel.info("Props: ");
     loglevel.info(props);
 
@@ -60,7 +61,7 @@ export default function (props) {
                             {...routeProps}
                             close={close}
                         />
-                    )}/>
+                    )} />
                 </Switch>
             </React.Fragment>
         </Dialog>

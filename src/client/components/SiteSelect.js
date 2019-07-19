@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import loglevel from 'loglevel';
 import { withRouter } from 'react-router-dom';
 
@@ -65,10 +65,19 @@ const styles = theme => ({
  * localStorageItemId - key id of record in localStorage to which the id of the selected site should be saved
  */
 function SiteSelect (props) {
+    loglevel.info("running the SiteSelect func again!");
+  
     const [sites, setSites] = useState({});
 
-    const sitesPromise = props.getSites();
-    sitesPromise.then(mySites => setSites(mySites));
+    let siteCount = 0;
+
+    useEffect(() => {
+      const sitesPromise = props.getSites();
+      sitesPromise.then(mySites => {
+        siteCount = Object.keys(mySites).length;
+        setSites(mySites);
+      });
+    }, [siteCount])
 
     const { classes } = props;
 
