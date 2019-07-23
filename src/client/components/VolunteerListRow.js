@@ -75,7 +75,13 @@ class VolunteerListRow extends React.Component {
       avatar = content;
     }
 
-    const carpoolSiteName = (this.props.primaryCarpoolSite) ? " | " + this.props.carpoolSites[this.props.primaryCarpoolSite]['Shortname'] : '';
+    let carpoolSiteName = ""
+    if (this.props.projectPreference) {
+      carpoolSiteName = " | " + this.props.projectPreference;
+    } else if (this.props.primaryCarpoolSite) {
+      carpoolSiteName = " | " + this.props.carpoolSites[this.props.primaryCarpoolSite]['Shortname'];
+    }
+
 
     return (
       <Slide in={show} onExited={this.exited} direction="left" timeout={{enter: 0, exit: 300}}>

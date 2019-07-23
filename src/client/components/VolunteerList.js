@@ -85,6 +85,7 @@ class VolunteerList extends React.Component {
           hasCar = {this.props.volunteerInfo[personID]['Has Car']}
           primaryCarpoolSite = {this.props.volunteerInfo[personID]['Primary Carpool']}
           carpoolSites = {this.props.carpoolSites}
+          projectPreference = {this.props.volunteerInfo[personID]['Project Preference'] || null}
           checkIn = {this.checkIn}
           checkInDialog = {this.checkInDialog}
           hide={hide.includes(personID)}

@@ -8,7 +8,7 @@ export const AIRTABLE = {
   PROJECT_SITES_TABLE: 'Project Sites',
   PROJECT_SITES_VIEW: 'DO NOT FILTER OR SORT',
   HEADS_UP_TABLE: 'Heads Up',
-  HEADS_UP_VIEW: 'Grid view',
+  HEADS_UP_VIEW: 'DO NOT FILTER OR SORT',
   TIME_ZONE: 'America/Detroit',
 }
 

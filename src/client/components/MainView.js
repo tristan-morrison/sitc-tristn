@@ -77,6 +77,8 @@ class MainView extends React.Component {
           if (checkedInIds.includes(personId)) {
             if (Object.keys(self.props.headsUpTeers).includes(personId)) {
               volunteers[personId]['isHeadsUp'] = true;
+              volunteers[personId]['Project Preference'] = self.props.headsUpTeers[personId]['Project Preference'];
+              loglevel.info(volunteers[personId]['Project Preference']);
               volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
               delete self.props.headsUpTeers[personId];
             }
@@ -86,6 +88,8 @@ class MainView extends React.Component {
             if (Object.keys(self.props.headsUpTeers).includes(personId)) {
               loglevel.info(personId);
               volunteers[personId]['isHeadsUp'] = true;
+              volunteers[personId]['Project Preference'] = self.props.headsUpTeers[personId]['Project Preference'];
+              loglevel.info(volunteers[personId]['Project Preference']);
               volunteers[personId]['headsUpRecId'] = self.props.headsUpTeers[personId];
               if (self.props.headsUpTeers[personId]['Carpool Site']) {
                 volunteers[personId]['Primary Carpool'] = self.props.headsUpTeers[personId]['Carpool Site'][0];
