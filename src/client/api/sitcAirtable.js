@@ -53,7 +53,8 @@ function checkIn (personId, hours, carpoolSiteId) {
       ],
       "Carpool Site": [carpoolSiteId],
       "Hours": hours,
-      "On Site": false
+      "On Site": false,
+      "Date": new Date(),
     }, function(err, record) {
       if (err) {
         loglevel.error(err)
