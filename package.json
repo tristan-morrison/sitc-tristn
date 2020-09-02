@@ -54,7 +54,7 @@
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "fuse.js": "^3.3.0",
-    "googleapis": "^37.2.0",
+    "googleapis": "^39.1.0",
     "loglevel": "^1.6.1",
     "passport": "^0.4.0",
     "passport-google-oauth": "^1.0.0",
