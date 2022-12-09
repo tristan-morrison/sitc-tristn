@@ -51,7 +51,7 @@
     "cookie-parser": "^1.4.4",
     "dotenv": "^6.2.0",
     "dotenv-webpack": "^1.7.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "express-session": "^1.15.6",
     "fuse.js": "^3.3.0",
     "googleapis": "^37.2.0",
